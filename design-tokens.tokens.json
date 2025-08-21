@@ -76,7 +76,7 @@
       "600": {
         "description": "",
         "type": "color",
-        "value": "#b658ffff",
+        "value": "#7c3aedff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
