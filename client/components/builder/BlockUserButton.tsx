@@ -1,9 +1,13 @@
 // client/components/builder/BlockUserButton.tsx
 import React, { useState, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Shield, ShieldOff, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
+import { useBlockUpdates } from "@/hooks/use-realtime";
 import { validateComponentProps, blockUserButtonSchema } from "./registry";
 
 interface BlockUserButtonProps {
@@ -26,95 +30,135 @@ export function BlockUserButton(props: BlockUserButtonProps) {
     className
   } = validatedProps;
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [checkingStatus, setCheckingStatus] = useState(true);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { lastUpdate } = useBlockUpdates(userId);
   
-  // Check if user is already blocked
-  useEffect(() => {
-    const checkBlockStatus = async () => {
-      try {
-        const response = await fetch('/api/me/blocks', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setIsBlocked(data.data.blockedUserIds.includes(targetId));
-        }
-      } catch (error) {
-        console.error('Error checking block status:', error);
-      } finally {
-        setCheckingStatus(false);
-      }
-    };
-
-    checkBlockStatus();
-  }, [targetId]);
+  const [blockReason, setBlockReason] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
   
-  const handleBlock = async () => {
-    try {
-      setIsLoading(true);
-      
-      const response = await fetch(`/api/users/${targetId}/block`, {
+  // Check if target user is blocked
+  const { data: blockedUsers, isLoading: checkingStatus } = useQuery<{
+    success: boolean;
+    data: { blockedUserIds: string[]; total: number };
+  }>({
+    queryKey: ['blocks', userId],
+    queryFn: async () => {
+      const response = await fetch('/api/blocks', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch blocked users');
+      return response.json();
+    },
+    staleTime: 30000, // 30 seconds
+  });
+  
+  const isBlocked = blockedUsers?.data.blockedUserIds.includes(targetId) || false;
+  
+  // Block user mutation
+  const blockUserMutation = useMutation({
+    mutationFn: async (reason?: string) => {
+      const response = await fetch('/api/blocks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         },
-        body: JSON.stringify({ reason: 'Blocked via button' }),
+        body: JSON.stringify({ 
+          userId: targetId, 
+          reason: reason || 'No reason provided' 
+        }),
       });
       
       if (!response.ok) {
-        throw new Error('Failed to block user');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to block user');
       }
       
-      setIsBlocked(true);
-      toast.success('User blocked successfully');
-      
-    } catch (error) {
-      console.error('Error blocking user:', error);
-      toast.error('Failed to block user. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['blocks', userId] });
+      setDialogOpen(false);
+      setBlockReason('');
+      toast({
+        title: "User blocked",
+        description: "The user has been blocked successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to block user",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
   
-  const handleUnblock = async () => {
-    try {
-      setIsLoading(true);
-      
-      const response = await fetch(`/api/users/${targetId}/block`, {
+  // Unblock user mutation
+  const unblockUserMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/blocks/${targetId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         },
       });
       
       if (!response.ok) {
-        throw new Error('Failed to unblock user');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to unblock user');
       }
       
-      setIsBlocked(false);
-      toast.success('User unblocked successfully');
-      
-    } catch (error) {
-      console.error('Error unblocking user:', error);
-      toast.error('Failed to unblock user. Please try again.');
-    } finally {
-      setIsLoading(false);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['blocks', userId] });
+      toast({
+        title: "User unblocked",
+        description: "The user has been unblocked successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to unblock user",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleBlock = () => {
+    blockUserMutation.mutate(blockReason);
+  };
+  
+  const handleUnblock = () => {
+    unblockUserMutation.mutate();
+  };
+  
+  const handleQuickBlock = () => {
+    if (confirmationRequired) {
+      setDialogOpen(true);
+    } else {
+      blockUserMutation.mutate();
     }
   };
   
-  const handleClick = () => {
-    if (isBlocked) {
-      handleUnblock();
-    } else {
-      handleBlock();
+  // Handle real-time block updates
+  useEffect(() => {
+    if (lastUpdate?.type === 'block_update') {
+      queryClient.invalidateQueries({ queryKey: ['blocks', userId] });
     }
-  };
+  }, [lastUpdate, queryClient, userId]);
+  
+  const isLoading = blockUserMutation.isPending || unblockUserMutation.isPending;
+  
+  // Don't allow blocking yourself
+  if (userId === targetId) {
+    return null;
+  }
   
   if (checkingStatus) {
     return (
@@ -124,9 +168,28 @@ export function BlockUserButton(props: BlockUserButtonProps) {
     );
   }
   
-  if (confirmationRequired && !isBlocked) {
+  if (isBlocked) {
     return (
-      <AlertDialog>
+      <Button 
+        variant="outline" 
+        size={size} 
+        onClick={handleUnblock}
+        disabled={isLoading}
+        className={className}
+      >
+        {unblockUserMutation.isPending ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <ShieldOff className="mr-2 h-4 w-4" />
+        )}
+        Unblock User
+      </Button>
+    );
+  }
+  
+  if (confirmationRequired) {
+    return (
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <AlertDialogTrigger asChild>
           <Button 
             variant={variant} 
@@ -134,11 +197,7 @@ export function BlockUserButton(props: BlockUserButtonProps) {
             disabled={isLoading}
             className={className}
           >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Shield className="mr-2 h-4 w-4" />
-            )}
+            <Shield className="mr-2 h-4 w-4" />
             Block User
           </Button>
         </AlertDialogTrigger>
@@ -150,14 +209,32 @@ export function BlockUserButton(props: BlockUserButtonProps) {
               or send you messages. You can unblock them later if needed.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          
+          <div className="space-y-2">
+            <Label htmlFor="block-reason">Reason (optional):</Label>
+            <Textarea
+              id="block-reason"
+              placeholder="Why are you blocking this user?"
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+              maxLength={500}
+              rows={3}
+            />
+            <p className="text-xs text-muted-foreground">
+              This reason is for your reference only and won't be shared.
+            </p>
+          </div>
+          
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoading}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleBlock}
               className="bg-red-600 hover:bg-red-700"
               disabled={isLoading}
             >
-              {isLoading ? (
+              {blockUserMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Blocking...
@@ -174,20 +251,18 @@ export function BlockUserButton(props: BlockUserButtonProps) {
   
   return (
     <Button 
-      variant={isBlocked ? "outline" : variant} 
+      variant={variant} 
       size={size} 
-      onClick={handleClick}
+      onClick={handleQuickBlock}
       disabled={isLoading}
       className={className}
     >
-      {isLoading ? (
+      {blockUserMutation.isPending ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      ) : isBlocked ? (
-        <ShieldOff className="mr-2 h-4 w-4" />
       ) : (
         <Shield className="mr-2 h-4 w-4" />
       )}
-      {isBlocked ? 'Unblock User' : 'Block User'}
+      Block User
     </Button>
   );
 }
