@@ -100,7 +100,7 @@
       "800": {
         "description": "",
         "type": "color",
-        "value": "#a128ffff",
+        "value": "#6b21ffff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
