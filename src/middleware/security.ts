@@ -38,6 +38,9 @@ const createSlowDown = (
 export function configureSecurityMiddleware(app: Application): void {
   console.log("🔒 Configuring security middleware...");
 
+  // Trust proxy for proper IP detection (important for rate limiting)
+  app.set('trust proxy', true);
+
   // Helmet for security headers
   app.use(
     helmet({
