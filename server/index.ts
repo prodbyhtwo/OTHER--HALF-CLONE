@@ -16,11 +16,12 @@ import {
 import inviteRoutes from "./routes/invites-router";
 import emailOTPRoutes from "./routes/email-otp-router";
 import { startOTPCleanupSchedule } from "./routes/email-otp";
-import { enforceEnvironmentVariables } from "../src/lib/env-guard";
+import { env, isSafeMode } from "../src/env/server";
+import { configureSecurityMiddleware, securityErrorHandler } from "../src/middleware/security";
 
 export function createServer() {
-  // Validate environment variables before starting server
-  enforceEnvironmentVariables();
+  // Environment is automatically validated in ../src/env/server.ts
+  console.log(`🚀 Starting server in ${env.NODE_ENV} mode (SAFE_MODE: ${isSafeMode})`);
 
   const app = express();
 
