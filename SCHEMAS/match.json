@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Match",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique match identifier"
+    },
+    "user1_id": {
+      "type": "string",
+      "description": "ID of the first user in the match"
+    },
+    "user2_id": {
+      "type": "string",
+      "description": "ID of the second user in the match"
+    },
+    "conversation_id": {
+      "type": ["string", "null"],
+      "description": "ID of the conversation created for this match"
+    },
+    "match_type": {
+      "type": "string",
+      "enum": ["like", "super_like"],
+      "description": "Type of match (regular like or super like)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "unmatched", "blocked", "expired"],
+      "default": "active",
+      "description": "Current status of the match"
+    },
+    "initiator_id": {
+      "type": "string",
+      "description": "ID of user who initiated the like that created the match"
+    },
+    "user1_liked_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When user1 liked user2"
+    },
+    "user2_liked_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When user2 liked user1"
+    },
+    "matched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the mutual match occurred"
+    },
+    "unmatched_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the match was broken"
+    },
+    "unmatched_by": {
+      "type": ["string", "null"],
+      "description": "ID of user who unmatched"
+    },
+    "unmatch_reason": {
+      "type": ["string", "null"],
+      "enum": ["no_interest", "inappropriate", "spam", "other"],
+      "description": "Reason for unmatching"
+    },
+    "last_message_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the last message was sent in this match"
+    },
+    "expires_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the match expires if no messages are sent"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional match metadata",
+      "properties": {
+        "compatibility_score": { "type": "number" },
+        "mutual_interests": { "type": "array", "items": { "type": "string" } },
+        "distance_km": { "type": "number" }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the match record was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the match was last updated"
+    }
+  },
+  "required": [
+    "id",
+    "user1_id",
+    "user2_id",
+    "match_type",
+    "status",
+    "initiator_id",
+    "matched_at",
+    "created_at",
+    "updated_at"
+  ],
+  "additionalProperties": false
+}

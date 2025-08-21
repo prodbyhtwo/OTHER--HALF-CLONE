@@ -1,0 +1,232 @@
+{
+  "timestamp": "2025-08-21T19:38:27.118Z",
+  "overallScore": 100,
+  "wcagCompliant": true,
+  "contrast": {
+    "audit": {
+      "results": [
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#ffffff",
+            "purpose": "Primary text on white background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 16.1,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#212121",
+            "purpose": "White text on dark background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 16.1,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#757575",
+            "background": "#ffffff",
+            "purpose": "Secondary text on white background",
+            "fontSize": 14,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 4.61,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#9610ff",
+            "purpose": "Primary button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 5.5,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#dc2626",
+            "purpose": "Error button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 4.83,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#047857",
+            "purpose": "Success button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 5.48,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#facc15",
+            "purpose": "Warning text",
+            "fontSize": 14,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 10.51,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#757575",
+            "background": "#ffffff",
+            "purpose": "Disabled text on light background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 4.61,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#7c3aed",
+            "background": "#ffffff",
+            "purpose": "Link text",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 5.7,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#fafafa",
+            "purpose": "Input text on light background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 15.43,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#6b7280",
+            "background": "#ffffff",
+            "purpose": "Placeholder text",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 4.83,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#6b21ff",
+            "background": "#eacfff",
+            "purpose": "Primary badge text",
+            "fontSize": 12,
+            "fontWeight": 500
+          },
+          "contrast": {
+            "ratio": 4.52,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        }
+      ],
+      "summary": {
+        "total": 12,
+        "passing": 12,
+        "failing": 0,
+        "percentage": 100
+      }
+    },
+    "recommendations": [],
+    "changes": []
+  },
+  "components": [
+    {
+      "component": "Button Primary",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Button Secondary",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Form Inputs",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Navigation",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Cards",
+      "issues": [],
+      "passes": true
+    }
+  ],
+  "summary": {
+    "totalChecks": 17,
+    "passingChecks": 17,
+    "failingChecks": 0,
+    "percentage": 100
+  }
+}

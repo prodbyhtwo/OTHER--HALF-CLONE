@@ -1,0 +1,250 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UserSettings",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user these settings belong to"
+    },
+    "push_preferences": {
+      "type": "object",
+      "properties": {
+        "marketing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive marketing push notifications"
+        },
+        "social": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive social activity push notifications (likes, matches, messages)"
+        },
+        "security": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive security-related push notifications"
+        },
+        "matches": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive new match push notifications"
+        },
+        "messages": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive new message push notifications"
+        },
+        "likes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive new like push notifications"
+        }
+      },
+      "required": [
+        "marketing",
+        "social",
+        "security",
+        "matches",
+        "messages",
+        "likes"
+      ],
+      "description": "Push notification preferences"
+    },
+    "email_preferences": {
+      "type": "object",
+      "properties": {
+        "marketing": {
+          "type": "boolean",
+          "default": false,
+          "description": "Receive marketing emails"
+        },
+        "social": {
+          "type": "boolean",
+          "default": false,
+          "description": "Receive social activity emails"
+        },
+        "security": {
+          "type": "boolean",
+          "default": true,
+          "description": "Receive security-related emails (always recommended)"
+        },
+        "matches": {
+          "type": "boolean",
+          "default": false,
+          "description": "Receive new match emails"
+        },
+        "messages": {
+          "type": "boolean",
+          "default": false,
+          "description": "Receive new message emails"
+        },
+        "weekly_digest": {
+          "type": "boolean",
+          "default": false,
+          "description": "Receive weekly activity digest emails"
+        }
+      },
+      "required": [
+        "marketing",
+        "social",
+        "security",
+        "matches",
+        "messages",
+        "weekly_digest"
+      ],
+      "description": "Email notification preferences"
+    },
+    "privacy_preferences": {
+      "type": "object",
+      "properties": {
+        "profile_visibility": {
+          "type": "string",
+          "enum": ["public", "matches_only", "private"],
+          "default": "public",
+          "description": "Who can view your profile"
+        },
+        "show_age": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show age on profile"
+        },
+        "show_distance": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show distance to other users"
+        },
+        "show_last_active": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show when you were last active"
+        },
+        "show_online_status": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show when you're currently online"
+        },
+        "discoverable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow others to discover your profile"
+        }
+      },
+      "required": [
+        "profile_visibility",
+        "show_age",
+        "show_distance",
+        "show_last_active",
+        "show_online_status",
+        "discoverable"
+      ],
+      "description": "Privacy and visibility preferences"
+    },
+    "discovery_preferences": {
+      "type": "object",
+      "properties": {
+        "min_age": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 100,
+          "default": 18,
+          "description": "Minimum age for discovery"
+        },
+        "max_age": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 100,
+          "default": 35,
+          "description": "Maximum age for discovery"
+        },
+        "max_distance_km": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500,
+          "default": 50,
+          "description": "Maximum distance in kilometers for discovery"
+        },
+        "preferred_denominations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "catholic",
+              "protestant",
+              "orthodox",
+              "baptist",
+              "methodist",
+              "presbyterian",
+              "pentecostal",
+              "lutheran",
+              "anglican",
+              "evangelical",
+              "non_denominational"
+            ]
+          },
+          "description": "Preferred denominations for matching"
+        },
+        "required_verification": {
+          "type": "boolean",
+          "default": false,
+          "description": "Only show verified profiles"
+        },
+        "preferred_church_attendance": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "monthly",
+              "occasionally",
+              "holidays_only",
+              "never"
+            ]
+          },
+          "description": "Preferred church attendance frequency"
+        }
+      },
+      "required": ["min_age", "max_age", "max_distance_km"],
+      "description": "Discovery and matching preferences"
+    },
+    "blocked_user_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of blocked user IDs"
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["light", "dark", "system", "faith"],
+      "default": "system",
+      "description": "App theme preference"
+    },
+    "language": {
+      "type": "string",
+      "default": "en",
+      "description": "Preferred app language (ISO 639-1 code)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the settings were created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the settings were last updated"
+    }
+  },
+  "required": [
+    "user_id",
+    "push_preferences",
+    "email_preferences",
+    "privacy_preferences",
+    "discovery_preferences",
+    "blocked_user_ids",
+    "theme",
+    "language",
+    "created_at",
+    "updated_at"
+  ],
+  "additionalProperties": false
+}

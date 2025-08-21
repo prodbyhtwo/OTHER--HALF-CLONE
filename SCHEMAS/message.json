@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Message",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique message identifier"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "ID of the conversation this message belongs to"
+    },
+    "sender_id": {
+      "type": "string",
+      "description": "ID of the user who sent the message"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "ID of the user who should receive the message"
+    },
+    "content": {
+      "type": "string",
+      "description": "The message content",
+      "maxLength": 5000
+    },
+    "message_type": {
+      "type": "string",
+      "enum": ["text", "image", "voice", "video", "location", "gif", "sticker"],
+      "description": "Type of message content"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "type": {
+            "type": "string",
+            "enum": ["image", "video", "audio", "document"]
+          },
+          "filename": { "type": "string" },
+          "size": { "type": "number" },
+          "mime_type": { "type": "string" }
+        },
+        "required": ["id", "url", "type"]
+      },
+      "description": "Array of file attachments"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["sending", "sent", "delivered", "read", "failed"],
+      "default": "sending",
+      "description": "Message delivery status"
+    },
+    "read_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the message was read by recipient"
+    },
+    "delivered_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the message was delivered"
+    },
+    "edited_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the message was last edited"
+    },
+    "reply_to_id": {
+      "type": ["string", "null"],
+      "description": "ID of message this is replying to"
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the message has been soft deleted"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional message metadata",
+      "properties": {
+        "client_id": { "type": "string" },
+        "platform": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "address": { "type": "string" }
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was last updated"
+    }
+  },
+  "required": [
+    "id",
+    "conversation_id",
+    "sender_id",
+    "recipient_id",
+    "content",
+    "message_type",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "additionalProperties": false
+}

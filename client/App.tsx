@@ -82,6 +82,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAudit from "./pages/AdminAudit";
 import AdminInvites from "./pages/AdminInvites";
+import SafeModeDemoPage from "./pages/SafeModeDemo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -247,6 +248,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/audit" element={<AdminAudit />} />
             <Route path="/admin/invites" element={<AdminInvites />} />
+            <Route path="/safe-mode-demo" element={<SafeModeDemoPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
