@@ -316,7 +316,10 @@ router.put("/settings/me", authenticateToken, validateSettingsConsistency, async
       hasEmailChanges: !!validatedUpdates.email_preferences,
       hasPushChanges: !!validatedUpdates.push_preferences,
     }, req);
-    
+
+    // Publish real-time update
+    await realtimeService.publishSettingsUpdate(user.id, updatedSettings);
+
     res.json({
       success: true,
       data: updatedSettings,
