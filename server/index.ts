@@ -50,8 +50,12 @@ export function createServer() {
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping";
-    res.json({ message: ping });
+    const ping = env.PING_MESSAGE ?? "ping";
+    res.json({
+      message: ping,
+      safeMode: isSafeMode,
+      timestamp: new Date().toISOString()
+    });
   });
 
   app.get("/api/demo", handleDemo);
