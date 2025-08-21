@@ -56,8 +56,13 @@ const Raw = {
 } as const;
 
 const Schema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  SAFE_MODE: z.preprocess(v => String(v).toLowerCase() === "true", z.boolean()),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
+  SAFE_MODE: z.preprocess(
+    (v) => String(v).toLowerCase() === "true",
+    z.boolean(),
+  ),
   PORT: z.string().regex(/^\d+$/).transform(Number),
 
   // Database
@@ -112,14 +117,16 @@ const Schema = z.object({
 // Helper to check if we have required secrets for production mode
 function hasRequiredSecrets(data: any): boolean {
   const requiredForProduction = [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'STRIPE_SECRET_KEY',
-    'SENDGRID_API_KEY',
-    'FROM_EMAIL'
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "STRIPE_SECRET_KEY",
+    "SENDGRID_API_KEY",
+    "FROM_EMAIL",
   ];
-  
-  return requiredForProduction.every(key => data[key] && data[key].trim() !== '');
+
+  return requiredForProduction.every(
+    (key) => data[key] && data[key].trim() !== "",
+  );
 }
 
 // Parse and validate
@@ -127,13 +134,13 @@ const parsed = Schema.safeParse(Raw);
 
 if (!parsed.success) {
   const wantedReal = String(Raw.SAFE_MODE).toLowerCase() === "false";
-  
+
   if (wantedReal) {
     console.error("❌ Environment validation failed:");
     console.error(JSON.stringify(parsed.error.format(), null, 2));
     process.exit(1);
   }
-  
+
   // In SAFE_MODE, provide reasonable defaults
   console.log("⚠️  Environment validation failed, falling back to SAFE_MODE");
 }
@@ -143,7 +150,7 @@ let finalData: z.infer<typeof Schema>;
 
 if (parsed.success) {
   finalData = parsed.data;
-  
+
   // Auto-enable SAFE_MODE if critical secrets are missing
   if (!finalData.SAFE_MODE && !hasRequiredSecrets(finalData)) {
     console.log("🔒 Missing critical secrets, auto-enabling SAFE_MODE");
@@ -152,7 +159,7 @@ if (parsed.success) {
 } else {
   // SAFE_MODE fallback with defaults
   finalData = {
-    NODE_ENV: Raw.NODE_ENV as any || "development",
+    NODE_ENV: (Raw.NODE_ENV as any) || "development",
     SAFE_MODE: true,
     PORT: 8080,
     FRONTEND_URL: Raw.FRONTEND_URL ?? "http://localhost:8080",
@@ -226,6 +233,7 @@ export const isCI = env.CI === "true";
 // Service availability helpers
 export const hasStripe = !env.SAFE_MODE && !!env.STRIPE_SECRET_KEY;
 export const hasEmail = !env.SAFE_MODE && !!env.SENDGRID_API_KEY;
-export const hasStorage = !env.SAFE_MODE && !!env.STORAGE_BUCKET_NAME && !!env.STORAGE_ACCESS_KEY;
+export const hasStorage =
+  !env.SAFE_MODE && !!env.STORAGE_BUCKET_NAME && !!env.STORAGE_ACCESS_KEY;
 export const hasDatabase = !!env.DATABASE_URL;
 export const hasAuth = !!env.JWT_SECRET;

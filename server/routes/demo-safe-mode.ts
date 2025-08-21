@@ -9,16 +9,16 @@ const router = Router();
 router.post("/email", async (req: Request, res: Response) => {
   try {
     const { to, subject, html, text } = req.body;
-    
+
     if (!to || !subject || !html) {
       return res.status(400).json({
         success: false,
-        error: "Missing required fields: to, subject, html"
+        error: "Missing required fields: to, subject, html",
       });
     }
 
     const { mailer } = createServices();
-    
+
     const result = await mailer.send({
       to,
       subject,
@@ -26,16 +26,20 @@ router.post("/email", async (req: Request, res: Response) => {
       text,
     });
 
-    logSecurityEvent("demo_email_sent", {
-      to,
-      subject,
-      success: result.success,
-    }, req);
+    logSecurityEvent(
+      "demo_email_sent",
+      {
+        to,
+        subject,
+        success: result.success,
+      },
+      req,
+    );
 
     res.json({
       success: result.success,
-      message: result.success 
-        ? "Email sent successfully (check /__mailbox in SAFE_MODE)" 
+      message: result.success
+        ? "Email sent successfully (check /__mailbox in SAFE_MODE)"
         : "Failed to send email",
       messageId: result.messageId,
       error: result.error,
@@ -44,7 +48,7 @@ router.post("/email", async (req: Request, res: Response) => {
     console.error("Demo email error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });
@@ -53,33 +57,37 @@ router.post("/email", async (req: Request, res: Response) => {
 router.post("/payment", async (req: Request, res: Response) => {
   try {
     const { priceId, userEmail, userId } = req.body;
-    
+
     if (!priceId || !userEmail || !userId) {
       return res.status(400).json({
         success: false,
-        error: "Missing required fields: priceId, userEmail, userId"
+        error: "Missing required fields: priceId, userEmail, userId",
       });
     }
 
     const { payments } = createServices();
-    
+
     const session = await payments.createCheckoutSession({
       priceId,
       userId,
       userEmail,
-      successUrl: `${req.get('origin') || 'http://localhost:8080'}/checkout/success`,
-      cancelUrl: `${req.get('origin') || 'http://localhost:8080'}/checkout/cancel`,
+      successUrl: `${req.get("origin") || "http://localhost:8080"}/checkout/success`,
+      cancelUrl: `${req.get("origin") || "http://localhost:8080"}/checkout/cancel`,
       metadata: {
         demo: "true",
         timestamp: new Date().toISOString(),
       },
     });
 
-    logSecurityEvent("demo_payment_created", {
-      priceId,
-      userId,
-      sessionId: session.id,
-    }, req);
+    logSecurityEvent(
+      "demo_payment_created",
+      {
+        priceId,
+        userId,
+        sessionId: session.id,
+      },
+      req,
+    );
 
     res.json({
       success: true,
@@ -92,7 +100,7 @@ router.post("/payment", async (req: Request, res: Response) => {
     console.error("Demo payment error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });
@@ -101,16 +109,16 @@ router.post("/payment", async (req: Request, res: Response) => {
 router.post("/analytics", async (req: Request, res: Response) => {
   try {
     const { event, userId, properties } = req.body;
-    
+
     if (!event) {
       return res.status(400).json({
         success: false,
-        error: "Missing required field: event"
+        error: "Missing required field: event",
       });
     }
 
     const { analytics } = createServices();
-    
+
     await analytics.track({
       name: event,
       userId,
@@ -121,10 +129,14 @@ router.post("/analytics", async (req: Request, res: Response) => {
       },
     });
 
-    logSecurityEvent("demo_analytics_tracked", {
-      event,
-      userId,
-    }, req);
+    logSecurityEvent(
+      "demo_analytics_tracked",
+      {
+        event,
+        userId,
+      },
+      req,
+    );
 
     res.json({
       success: true,
@@ -137,7 +149,7 @@ router.post("/analytics", async (req: Request, res: Response) => {
     console.error("Demo analytics error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });
@@ -146,16 +158,16 @@ router.post("/analytics", async (req: Request, res: Response) => {
 router.post("/notification", async (req: Request, res: Response) => {
   try {
     const { to, title, body, data } = req.body;
-    
+
     if (!to || !title || !body) {
       return res.status(400).json({
         success: false,
-        error: "Missing required fields: to, title, body"
+        error: "Missing required fields: to, title, body",
       });
     }
 
     const { pushNotifications } = createServices();
-    
+
     const result = await pushNotifications.send({
       to,
       title,
@@ -167,16 +179,20 @@ router.post("/notification", async (req: Request, res: Response) => {
       },
     });
 
-    logSecurityEvent("demo_notification_sent", {
-      to,
-      title,
-      success: result.success,
-    }, req);
+    logSecurityEvent(
+      "demo_notification_sent",
+      {
+        to,
+        title,
+        success: result.success,
+      },
+      req,
+    );
 
     res.json({
       success: result.success,
-      message: result.success 
-        ? "Push notification sent successfully" 
+      message: result.success
+        ? "Push notification sent successfully"
         : "Failed to send notification",
       messageId: result.messageId,
       error: result.error,
@@ -185,7 +201,7 @@ router.post("/notification", async (req: Request, res: Response) => {
     console.error("Demo notification error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });
@@ -194,31 +210,35 @@ router.post("/notification", async (req: Request, res: Response) => {
 router.post("/storage", async (req: Request, res: Response) => {
   try {
     const { filename, content, contentType = "text/plain" } = req.body;
-    
+
     if (!filename || !content) {
       return res.status(400).json({
         success: false,
-        error: "Missing required fields: filename, content"
+        error: "Missing required fields: filename, content",
       });
     }
 
     const { storage } = createServices();
-    
-    const buffer = Buffer.from(content, 'utf-8');
+
+    const buffer = Buffer.from(content, "utf-8");
     const key = `demo/${Date.now()}-${filename}`;
-    
+
     const result = await storage.upload(buffer, key, contentType);
 
-    logSecurityEvent("demo_storage_upload", {
-      filename,
-      key,
-      success: result.success,
-    }, req);
+    logSecurityEvent(
+      "demo_storage_upload",
+      {
+        filename,
+        key,
+        success: result.success,
+      },
+      req,
+    );
 
     res.json({
       success: result.success,
-      message: result.success 
-        ? "File uploaded successfully" 
+      message: result.success
+        ? "File uploaded successfully"
         : "Failed to upload file",
       file: result.file,
       error: result.error,
@@ -227,7 +247,7 @@ router.post("/storage", async (req: Request, res: Response) => {
     console.error("Demo storage error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });
@@ -259,7 +279,7 @@ router.get("/stats", async (req: Request, res: Response) => {
     console.error("Demo stats error:", error);
     res.status(500).json({
       success: false,
-      error: error.message || "Internal server error"
+      error: error.message || "Internal server error",
     });
   }
 });

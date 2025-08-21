@@ -1,9 +1,9 @@
 // src/services/storage.ts
-import type { 
-  Storage, 
-  StorageFile, 
-  StorageUploadResult, 
-  StorageConfig 
+import type {
+  Storage,
+  StorageFile,
+  StorageUploadResult,
+  StorageConfig,
 } from "./types";
 import fs from "fs/promises";
 import path from "path";
@@ -15,7 +15,7 @@ export class RealStorage implements Storage {
 
   constructor(config: StorageConfig) {
     this.bucketName = config.bucketName;
-    
+
     try {
       // This would typically be AWS SDK
       // const AWS = require('aws-sdk');
@@ -31,7 +31,11 @@ export class RealStorage implements Storage {
     }
   }
 
-  async upload(file: Buffer, key: string, contentType: string): Promise<StorageUploadResult> {
+  async upload(
+    file: Buffer,
+    key: string,
+    contentType: string,
+  ): Promise<StorageUploadResult> {
     // Implementation would use AWS S3 upload
     throw new Error("Real storage not implemented");
   }
@@ -72,23 +76,27 @@ export class MockStorage implements Storage {
     }
   }
 
-  async upload(file: Buffer, key: string, contentType: string): Promise<StorageUploadResult> {
+  async upload(
+    file: Buffer,
+    key: string,
+    contentType: string,
+  ): Promise<StorageUploadResult> {
     try {
       await this.ensureStorageDir();
-      
+
       // Ensure the directory structure exists
       const keyDir = path.dirname(key);
-      if (keyDir !== '.') {
+      if (keyDir !== ".") {
         const fullDir = path.join(this.storageDir, keyDir);
         await fs.mkdir(fullDir, { recursive: true });
       }
-      
+
       const filePath = path.join(this.storageDir, key);
       await fs.writeFile(filePath, file);
-      
+
       const stats = await fs.stat(filePath);
       const url = `${this.baseUrl}/${key}`;
-      
+
       const storageFile: StorageFile = {
         key,
         url,
@@ -96,8 +104,10 @@ export class MockStorage implements Storage {
         contentType,
       };
 
-      console.log(`🗄️  File uploaded to mock storage: ${key} (${stats.size} bytes)`);
-      
+      console.log(
+        `🗄️  File uploaded to mock storage: ${key} (${stats.size} bytes)`,
+      );
+
       return {
         success: true,
         file: storageFile,
@@ -114,7 +124,7 @@ export class MockStorage implements Storage {
   async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
     // In mock mode, we just return a direct URL since there's no real auth
     // In a real implementation, this would generate a time-limited signed URL
-    const timestamp = Date.now() + (expiresIn * 1000);
+    const timestamp = Date.now() + expiresIn * 1000;
     return `${this.baseUrl}/${key}?expires=${timestamp}&signature=mock`;
   }
 
@@ -133,16 +143,21 @@ export class MockStorage implements Storage {
   async list(prefix?: string): Promise<StorageFile[]> {
     try {
       await this.ensureStorageDir();
-      
+
       const files: StorageFile[] = [];
-      
-      async function walkDir(dir: string, currentPrefix: string = ''): Promise<void> {
+
+      async function walkDir(
+        dir: string,
+        currentPrefix: string = "",
+      ): Promise<void> {
         const entries = await fs.readdir(dir, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(dir, entry.name);
-          const relativePath = path.join(currentPrefix, entry.name).replace(/\\/g, '/');
-          
+          const relativePath = path
+            .join(currentPrefix, entry.name)
+            .replace(/\\/g, "/");
+
           if (entry.isDirectory()) {
             await walkDir(fullPath, relativePath);
           } else {
@@ -158,7 +173,7 @@ export class MockStorage implements Storage {
           }
         }
       }
-      
+
       await walkDir(this.storageDir);
       return files.sort((a, b) => a.key.localeCompare(b.key));
     } catch (error) {
@@ -170,32 +185,32 @@ export class MockStorage implements Storage {
   private guessContentType(filename: string): string {
     const ext = path.extname(filename).toLowerCase();
     const mimeTypes: Record<string, string> = {
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.png': 'image/png',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-      '.svg': 'image/svg+xml',
-      '.pdf': 'application/pdf',
-      '.txt': 'text/plain',
-      '.html': 'text/html',
-      '.css': 'text/css',
-      '.js': 'application/javascript',
-      '.json': 'application/json',
-      '.mp4': 'video/mp4',
-      '.webm': 'video/webm',
-      '.mp3': 'audio/mpeg',
-      '.wav': 'audio/wav',
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".png": "image/png",
+      ".gif": "image/gif",
+      ".webp": "image/webp",
+      ".svg": "image/svg+xml",
+      ".pdf": "application/pdf",
+      ".txt": "text/plain",
+      ".html": "text/html",
+      ".css": "text/css",
+      ".js": "application/javascript",
+      ".json": "application/json",
+      ".mp4": "video/mp4",
+      ".webm": "video/webm",
+      ".mp3": "audio/mpeg",
+      ".wav": "audio/wav",
     };
-    
-    return mimeTypes[ext] || 'application/octet-stream';
+
+    return mimeTypes[ext] || "application/octet-stream";
   }
 
   // Mock-specific utility methods
   async clearStorage(): Promise<void> {
     try {
       const files = await this.list();
-      const deletePromises = files.map(file => this.delete(file.key));
+      const deletePromises = files.map((file) => this.delete(file.key));
       await Promise.all(deletePromises);
       console.log(`🗑️  Cleared ${files.length} files from mock storage`);
     } catch (error) {

@@ -1,9 +1,9 @@
 // src/services/mailer.ts
-import type { 
-  Mailer, 
-  EmailMessage, 
-  EmailDeliveryResult, 
-  MailerConfig 
+import type {
+  Mailer,
+  EmailMessage,
+  EmailDeliveryResult,
+  MailerConfig,
 } from "./types";
 import fs from "fs/promises";
 import path from "path";
@@ -17,14 +17,14 @@ export class RealMailer implements Mailer {
   constructor(config: MailerConfig) {
     // Lazy load SendGrid to avoid import errors in SAFE_MODE
     try {
-      const sgMail = require('@sendgrid/mail');
+      const sgMail = require("@sendgrid/mail");
       sgMail.setApiKey(config.apiKey);
       this.sendGrid = sgMail;
     } catch (error) {
       console.warn("⚠️  SendGrid not installed, falling back to mock");
       throw new Error("SendGrid package not available");
     }
-    
+
     this.fromEmail = config.from.email;
     this.fromName = config.from.name;
   }
@@ -43,10 +43,10 @@ export class RealMailer implements Mailer {
       };
 
       const [response] = await this.sendGrid.send(msg);
-      
+
       return {
         success: true,
-        messageId: response.headers['x-message-id'],
+        messageId: response.headers["x-message-id"],
       };
     } catch (error: any) {
       console.error("SendGrid error:", error);
@@ -61,14 +61,14 @@ export class RealMailer implements Mailer {
     // Send in parallel with some concurrency limit
     const BATCH_SIZE = 10;
     const results: EmailDeliveryResult[] = [];
-    
+
     for (let i = 0; i < messages.length; i += BATCH_SIZE) {
       const batch = messages.slice(i, i + BATCH_SIZE);
-      const batchPromises = batch.map(msg => this.send(msg));
+      const batchPromises = batch.map((msg) => this.send(msg));
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults);
     }
-    
+
     return results;
   }
 }
@@ -94,18 +94,18 @@ export class MockMailer implements Mailer {
   async send(message: EmailMessage): Promise<EmailDeliveryResult> {
     try {
       await this.ensureMailboxDir();
-      
+
       const messageId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const filename = `${messageId}.eml`;
       const filepath = path.join(this.mailboxDir, filename);
-      
+
       // Create EML format content
       const emlContent = this.createEMLContent(message, messageId);
-      
-      await fs.writeFile(filepath, emlContent, 'utf-8');
-      
+
+      await fs.writeFile(filepath, emlContent, "utf-8");
+
       console.log(`📧 Email delivered to mock mailbox: ${filename}`);
-      
+
       return {
         success: true,
         messageId,
@@ -121,19 +121,22 @@ export class MockMailer implements Mailer {
 
   async sendBatch(messages: EmailMessage[]): Promise<EmailDeliveryResult[]> {
     const results: EmailDeliveryResult[] = [];
-    
+
     for (const message of messages) {
       const result = await this.send(message);
       results.push(result);
     }
-    
+
     return results;
   }
 
   private createEMLContent(message: EmailMessage, messageId: string): string {
     const now = new Date().toUTCString();
-    const from = message.from || { email: "dev@localhost", name: "Development App" };
-    
+    const from = message.from || {
+      email: "dev@localhost",
+      name: "Development App",
+    };
+
     return `Message-ID: <${messageId}@localhost>
 Date: ${now}
 From: ${from.name} <${from.email}>
@@ -145,10 +148,14 @@ Content-Transfer-Encoding: 8bit
 
 ${message.html}
 
-${message.text ? `
+${
+  message.text
+    ? `
 
 --- TEXT VERSION ---
-${message.text}` : ''}
+${message.text}`
+    : ""
+}
 `;
   }
 
@@ -157,7 +164,10 @@ ${message.text}` : ''}
     try {
       await this.ensureMailboxDir();
       const files = await fs.readdir(this.mailboxDir);
-      return files.filter(file => file.endsWith('.eml')).sort().reverse();
+      return files
+        .filter((file) => file.endsWith(".eml"))
+        .sort()
+        .reverse();
     } catch {
       return [];
     }
@@ -167,7 +177,7 @@ ${message.text}` : ''}
   async readEmail(filename: string): Promise<string | null> {
     try {
       const filepath = path.join(this.mailboxDir, filename);
-      return await fs.readFile(filepath, 'utf-8');
+      return await fs.readFile(filepath, "utf-8");
     } catch {
       return null;
     }
@@ -177,8 +187,8 @@ ${message.text}` : ''}
   async clearMailbox(): Promise<void> {
     try {
       const files = await this.listEmails();
-      const deletePromises = files.map(file => 
-        fs.unlink(path.join(this.mailboxDir, file))
+      const deletePromises = files.map((file) =>
+        fs.unlink(path.join(this.mailboxDir, file)),
       );
       await Promise.all(deletePromises);
       console.log(`🗑️  Cleared ${files.length} emails from mailbox`);

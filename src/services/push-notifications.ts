@@ -1,9 +1,9 @@
 // src/services/push-notifications.ts
-import type { 
-  PushNotifications, 
-  PushNotification, 
-  NotificationResult, 
-  PushNotificationsConfig 
+import type {
+  PushNotifications,
+  PushNotification,
+  NotificationResult,
+  PushNotificationsConfig,
 } from "./types";
 import fs from "fs/promises";
 import path from "path";
@@ -26,15 +26,22 @@ export class RealPushNotifications implements PushNotifications {
     };
   }
 
-  async sendBatch(notifications: PushNotification[]): Promise<NotificationResult[]> {
-    return Promise.all(notifications.map(notification => this.send(notification)));
+  async sendBatch(
+    notifications: PushNotification[],
+  ): Promise<NotificationResult[]> {
+    return Promise.all(
+      notifications.map((notification) => this.send(notification)),
+    );
   }
 }
 
 // Mock Push Notifications implementation
 export class MockPushNotifications implements PushNotifications {
   private notificationsDir: string;
-  private notifications: (PushNotification & { id: string; timestamp: number })[] = [];
+  private notifications: (PushNotification & {
+    id: string;
+    timestamp: number;
+  })[] = [];
 
   constructor() {
     this.notificationsDir = path.join(process.cwd(), ".notifications");
@@ -53,7 +60,7 @@ export class MockPushNotifications implements PushNotifications {
     try {
       const messageId = `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const timestamp = Date.now();
-      
+
       const storedNotification = {
         ...notification,
         id: messageId,
@@ -62,9 +69,11 @@ export class MockPushNotifications implements PushNotifications {
 
       this.notifications.push(storedNotification);
       await this.persistNotification(storedNotification);
-      
-      console.log(`🔔 Mock push notification sent: ${notification.title} (${messageId})`);
-      
+
+      console.log(
+        `🔔 Mock push notification sent: ${notification.title} (${messageId})`,
+      );
+
       return {
         success: true,
         messageId,
@@ -78,14 +87,16 @@ export class MockPushNotifications implements PushNotifications {
     }
   }
 
-  async sendBatch(notifications: PushNotification[]): Promise<NotificationResult[]> {
+  async sendBatch(
+    notifications: PushNotification[],
+  ): Promise<NotificationResult[]> {
     const results: NotificationResult[] = [];
-    
+
     for (const notification of notifications) {
       const result = await this.send(notification);
       results.push(result);
     }
-    
+
     return results;
   }
 
@@ -109,8 +120,8 @@ export class MockPushNotifications implements PushNotifications {
     this.notifications = [];
     try {
       const files = await fs.readdir(this.notificationsDir);
-      const deletePromises = files.map(file => 
-        fs.unlink(path.join(this.notificationsDir, file))
+      const deletePromises = files.map((file) =>
+        fs.unlink(path.join(this.notificationsDir, file)),
       );
       await Promise.all(deletePromises);
       console.log("🗑️  Cleared push notifications");
@@ -119,7 +130,9 @@ export class MockPushNotifications implements PushNotifications {
     }
   }
 
-  async getNotificationById(id: string): Promise<(PushNotification & { id: string; timestamp: number }) | null> {
-    return this.notifications.find(n => n.id === id) || null;
+  async getNotificationById(
+    id: string,
+  ): Promise<(PushNotification & { id: string; timestamp: number }) | null> {
+    return this.notifications.find((n) => n.id === id) || null;
   }
 }

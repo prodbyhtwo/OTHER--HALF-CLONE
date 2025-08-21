@@ -34,7 +34,7 @@ export interface CheckoutSessionData {
 export interface CheckoutSession {
   id: string;
   url: string;
-  status: 'pending' | 'completed' | 'expired';
+  status: "pending" | "completed" | "expired";
   metadata?: Record<string, string>;
 }
 
@@ -67,7 +67,10 @@ export interface Payments {
   createCheckoutSession(data: CheckoutSessionData): Promise<CheckoutSession>;
   retrieveCheckoutSession(sessionId: string): Promise<CheckoutSession | null>;
   handleWebhook(payload: string, signature: string): Promise<WebhookEvent>;
-  createCustomer(email: string, metadata?: Record<string, string>): Promise<{ id: string }>;
+  createCustomer(
+    email: string,
+    metadata?: Record<string, string>,
+  ): Promise<{ id: string }>;
   getSubscription(subscriptionId: string): Promise<Subscription | null>;
   cancelSubscription(subscriptionId: string): Promise<{ success: boolean }>;
 }
@@ -86,7 +89,11 @@ export interface StorageUploadResult {
 }
 
 export interface Storage {
-  upload(file: Buffer, key: string, contentType: string): Promise<StorageUploadResult>;
+  upload(
+    file: Buffer,
+    key: string,
+    contentType: string,
+  ): Promise<StorageUploadResult>;
   getSignedUrl(key: string, expiresIn?: number): Promise<string>;
   delete(key: string): Promise<{ success: boolean }>;
   list(prefix?: string): Promise<StorageFile[]>;

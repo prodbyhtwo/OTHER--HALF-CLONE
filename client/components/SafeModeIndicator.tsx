@@ -3,7 +3,13 @@ import { useState } from "react";
 import { envClient } from "../../src/env/client";
 import { AlertTriangle, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 interface SafeModeIndicatorProps {
@@ -12,15 +18,19 @@ interface SafeModeIndicatorProps {
   showDismiss?: boolean;
 }
 
-export function SafeModeIndicator({ 
-  className = "", 
+export function SafeModeIndicator({
+  className = "",
   variant = "badge",
-  showDismiss = false 
+  showDismiss = false,
 }: SafeModeIndicatorProps) {
   const [isDismissed, setIsDismissed] = useState(false);
-  
+
   // Don't show in production or if not in safe mode
-  if (!envClient.VITE_SAFE_MODE || envClient.MODE === "production" || isDismissed) {
+  if (
+    !envClient.VITE_SAFE_MODE ||
+    envClient.MODE === "production" ||
+    isDismissed
+  ) {
     return null;
   }
 
@@ -30,7 +40,9 @@ export function SafeModeIndicator({
 
   if (variant === "banner") {
     return (
-      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4 ${className}`}>
+      <div
+        className={`bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4 ${className}`}
+      >
         <div className="flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
@@ -38,8 +50,8 @@ export function SafeModeIndicator({
               Development Mode Active
             </h3>
             <p className="text-sm text-amber-700 mt-1">
-              This application is running in SAFE_MODE with mock services. 
-              All payments, emails, and external integrations are simulated.
+              This application is running in SAFE_MODE with mock services. All
+              payments, emails, and external integrations are simulated.
             </p>
             <SafeModeDetailsDialog />
           </div>
@@ -60,7 +72,9 @@ export function SafeModeIndicator({
 
   if (variant === "compact") {
     return (
-      <div className={`inline-flex items-center gap-2 text-xs text-amber-700 ${className}`}>
+      <div
+        className={`inline-flex items-center gap-2 text-xs text-amber-700 ${className}`}
+      >
         <AlertTriangle className="h-3 w-3" />
         <span>SAFE MODE</span>
         <SafeModeDetailsDialog />
@@ -70,8 +84,15 @@ export function SafeModeIndicator({
 
   // Default badge variant
   return (
-    <div className={`inline-flex items-center gap-2 ${className}`} role="status" aria-live="polite">
-      <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-300">
+    <div
+      className={`inline-flex items-center gap-2 ${className}`}
+      role="status"
+      aria-live="polite"
+    >
+      <Badge
+        variant="outline"
+        className="bg-amber-50 text-amber-800 border-amber-300"
+      >
         <AlertTriangle className="h-3 w-3 mr-1" />
         SAFE MODE
       </Badge>
@@ -98,12 +119,15 @@ function SafeModeDetailsDialog() {
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            This application is running in development mode with mock services enabled.
+            This application is running in development mode with mock services
+            enabled.
           </p>
-          
+
           <div className="space-y-3">
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">Mock Services Active:</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">
+                Mock Services Active:
+              </h4>
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• 💳 Payments (Stripe) - Mock checkout flows</li>
                 <li>• 📧 Email (SendGrid) - Saved to local mailbox</li>
@@ -112,9 +136,11 @@ function SafeModeDetailsDialog() {
                 <li>• 🔔 Push Notifications - Mock delivery</li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">What this means:</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-2">
+                What this means:
+              </h4>
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• No real charges will be made</li>
                 <li>• Emails are saved locally (not sent)</li>
@@ -123,13 +149,14 @@ function SafeModeDetailsDialog() {
               </ul>
             </div>
           </div>
-          
+
           <div className="bg-blue-50 rounded-lg p-3">
             <h4 className="text-sm font-medium text-blue-900 mb-1">
               For Developers:
             </h4>
             <p className="text-xs text-blue-800">
-              Set <code>SAFE_MODE=false</code> and provide real API keys to enable production services.
+              Set <code>SAFE_MODE=false</code> and provide real API keys to
+              enable production services.
             </p>
           </div>
         </div>
@@ -154,10 +181,10 @@ interface SafeModeWrapperProps {
   requireReal?: boolean;
 }
 
-export function SafeModeWrapper({ 
-  children, 
-  fallback, 
-  requireReal = false 
+export function SafeModeWrapper({
+  children,
+  fallback,
+  requireReal = false,
 }: SafeModeWrapperProps) {
   if (requireReal && envClient.VITE_SAFE_MODE) {
     return (

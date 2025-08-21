@@ -8,14 +8,14 @@ export * from "./analytics";
 export * from "./push-notifications";
 
 // Convenience re-exports for the most commonly used items
-export { 
-  createMailer, 
-  createPayments, 
-  createStorage, 
+export {
+  createMailer,
+  createPayments,
+  createStorage,
   createAnalytics,
   createPushNotifications,
   createServices,
-  getServiceStatus 
+  getServiceStatus,
 } from "./factory";
 
 export type {
@@ -28,5 +28,5 @@ export type {
   CheckoutSessionData,
   StorageFile,
   AnalyticsEvent,
-  PushNotification
+  PushNotification,
 } from "./types";
