@@ -296,7 +296,7 @@
       "light disabled": {
         "description": "",
         "type": "color",
-        "value": "#d8d8d8ff",
+        "value": "#757575ff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
