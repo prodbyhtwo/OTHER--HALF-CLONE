@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import demoSafeModeRoutes from "./routes/demo-safe-mode";
+import userProfileRoutes from "./routes/user-profile";
+import userSettingsRoutes from "./routes/user-settings";
 import stripeRoutes from "./routes/stripe";
 import adminRoutes from "./routes/admin";
 import auditRoutes from "./routes/audit";
@@ -76,6 +78,10 @@ export function createServer() {
 
   // Auth routes
   app.use("/api/auth", authRoutes);
+
+  // User profile and settings routes
+  app.use("/api", userProfileRoutes);
+  app.use("/api", userSettingsRoutes);
 
   // Matches routes
   app.use("/api/matches", matchesRoutes);
