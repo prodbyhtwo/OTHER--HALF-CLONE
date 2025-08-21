@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { authenticateToken } from "./auth";
 import { logSecurityEvent } from "../../src/middleware/security";
+import { realtimeService } from "../../src/services/realtime";
 import type { 
   User, 
   UserSettings,
