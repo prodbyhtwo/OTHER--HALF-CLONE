@@ -248,7 +248,7 @@
       "success": {
         "description": "",
         "type": "color",
-        "value": "#12d18eff",
+        "value": "#059669ff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
@@ -14101,7 +14101,7 @@
     },
     "about": {
       "type": "string",
-      "value": "�� propos",
+      "value": "À propos",
       "extensions": {
         "org.lukasoppermann.figmaDesignTokens": {
           "collection": "Language",
