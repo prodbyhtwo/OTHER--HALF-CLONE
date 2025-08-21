@@ -467,10 +467,13 @@ router.post("/blocks", authenticateToken, async (req: Request, res: Response) =>
       blockedId: targetUserId,
       reason: validatedData.reason,
     }, req);
-    
+
+    // Publish real-time update
+    await realtimeService.publishBlockUpdate(currentUser.id, targetUserId, 'blocked');
+
     res.json({
       success: true,
-      data: { 
+      data: {
         blockedUserId: targetUserId,
         blockedAt: new Date().toISOString()
       },
