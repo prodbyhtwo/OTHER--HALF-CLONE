@@ -1,0 +1,257 @@
+{
+  "timestamp": "2025-08-21T19:30:01.867Z",
+  "overallScore": 59,
+  "wcagCompliant": false,
+  "contrast": {
+    "audit": {
+      "results": [
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#ffffff",
+            "purpose": "Primary text on white background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 16.1,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#212121",
+            "purpose": "White text on dark background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 16.1,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#757575",
+            "background": "#ffffff",
+            "purpose": "Secondary text on white background",
+            "fontSize": 14,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 4.61,
+            "level": "AA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#ab40ff",
+            "purpose": "Primary button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 4.28,
+            "level": "A",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 4.28:1"
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#f75555",
+            "purpose": "Error button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 3.29,
+            "level": "A",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 3.29:1"
+        },
+        {
+          "pair": {
+            "foreground": "#ffffff",
+            "background": "#12d18e",
+            "purpose": "Success button text",
+            "fontSize": 16,
+            "fontWeight": 600
+          },
+          "contrast": {
+            "ratio": 1.99,
+            "level": "Fail",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 1.99:1"
+        },
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#facc15",
+            "purpose": "Warning text",
+            "fontSize": 14,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 10.51,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#d8d8d8",
+            "background": "#ffffff",
+            "purpose": "Disabled text on light background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 1.43,
+            "level": "Fail",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 1.43:1"
+        },
+        {
+          "pair": {
+            "foreground": "#b658ff",
+            "background": "#ffffff",
+            "purpose": "Link text",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 3.6,
+            "level": "A",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 3.6:1"
+        },
+        {
+          "pair": {
+            "foreground": "#212121",
+            "background": "#fafafa",
+            "purpose": "Input text on light background",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 15.43,
+            "level": "AAA",
+            "passes": true
+          },
+          "isLarge": false
+        },
+        {
+          "pair": {
+            "foreground": "#bdbdbd",
+            "background": "#ffffff",
+            "purpose": "Placeholder text",
+            "fontSize": 16,
+            "fontWeight": 400
+          },
+          "contrast": {
+            "ratio": 1.88,
+            "level": "Fail",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 1.88:1"
+        },
+        {
+          "pair": {
+            "foreground": "#a128ff",
+            "background": "#eacfff",
+            "purpose": "Primary badge text",
+            "fontSize": 12,
+            "fontWeight": 500
+          },
+          "contrast": {
+            "ratio": 3.49,
+            "level": "A",
+            "passes": false
+          },
+          "isLarge": false,
+          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 3.49:1"
+        }
+      ],
+      "summary": {
+        "total": 12,
+        "passing": 5,
+        "failing": 7,
+        "percentage": 42
+      }
+    },
+    "recommendations": [
+      "Primary button text: Increase contrast to at least 4.5:1 for normal text. Current: 4.28:1",
+      "Error button text: Increase contrast to at least 4.5:1 for normal text. Current: 3.29:1",
+      "Success button text: Increase contrast to at least 4.5:1 for normal text. Current: 1.99:1",
+      "Disabled text on light background: Increase contrast to at least 4.5:1 for normal text. Current: 1.43:1",
+      "Link text: Increase contrast to at least 4.5:1 for normal text. Current: 3.6:1",
+      "Placeholder text: Increase contrast to at least 4.5:1 for normal text. Current: 1.88:1",
+      "Primary badge text: Increase contrast to at least 4.5:1 for normal text. Current: 3.49:1",
+      "Consider using darker text colors for better accessibility",
+      "Test color combinations with accessibility tools",
+      "Ensure sufficient contrast for all interactive elements"
+    ],
+    "changes": [
+      {
+        "token": "alerts & status.light disabled",
+        "current": "#d8d8d8",
+        "suggested": "#9e9e9e",
+        "reason": "Improve disabled text contrast while maintaining disabled appearance"
+      }
+    ]
+  },
+  "components": [
+    {
+      "component": "Button Primary",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Button Secondary",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Form Inputs",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Navigation",
+      "issues": [],
+      "passes": true
+    },
+    {
+      "component": "Cards",
+      "issues": [],
+      "passes": true
+    }
+  ],
+  "summary": {
+    "totalChecks": 17,
+    "passingChecks": 10,
+    "failingChecks": 7,
+    "percentage": 59
+  }
+}
