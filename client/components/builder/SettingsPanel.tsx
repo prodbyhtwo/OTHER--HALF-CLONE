@@ -1,24 +1,37 @@
 // client/components/builder/SettingsPanel.tsx
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Save, Check, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSettingsUpdates } from "@/hooks/use-realtime";
 import { validateComponentProps, settingsPanelSchema } from "./registry";
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from "use-debounce";
 
 interface SettingsPanelProps {
   userId: string;
-  section?: 'push' | 'email' | 'privacy' | 'discovery' | 'all';
+  section?: "push" | "email" | "privacy" | "discovery" | "all";
   showSaveButton?: boolean;
   autoSave?: boolean;
   autoSaveDelay?: number;
@@ -44,7 +57,7 @@ interface UserSettings {
     weekly_digest: boolean;
   };
   privacy_preferences: {
-    profile_visibility: 'public' | 'matches_only' | 'private';
+    profile_visibility: "public" | "matches_only" | "private";
     show_age: boolean;
     show_distance: boolean;
     show_last_active: boolean;
@@ -58,73 +71,81 @@ interface UserSettings {
     preferred_denominations?: string[];
     required_verification: boolean;
   };
-  theme: 'light' | 'dark' | 'system' | 'faith';
+  theme: "light" | "dark" | "system" | "faith";
   language: string;
   updated_at: string;
 }
 
 export function SettingsPanel(props: SettingsPanelProps) {
-  const validatedProps = validateComponentProps('SettingsPanel', props, settingsPanelSchema);
-  const { 
-    userId, 
-    section = 'all', 
-    showSaveButton = true, 
-    autoSave = false, 
+  const validatedProps = validateComponentProps(
+    "SettingsPanel",
+    props,
+    settingsPanelSchema,
+  );
+  const {
+    userId,
+    section = "all",
+    showSaveButton = true,
+    autoSave = false,
     autoSaveDelay = 600,
-    className
+    className,
   } = validatedProps;
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { lastUpdate } = useSettingsUpdates(userId);
-  
+
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  
+
   const form = useForm<UserSettings>();
-  
+
   // Load settings
-  const { data: settingsData, isLoading, error } = useQuery<{
+  const {
+    data: settingsData,
+    isLoading,
+    error,
+  } = useQuery<{
     success: boolean;
     data: UserSettings;
   }>({
-    queryKey: ['settings', userId],
+    queryKey: ["settings", userId],
     queryFn: async () => {
-      const response = await fetch('/api/settings/me', {
+      const response = await fetch("/api/settings/me", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
       });
-      if (!response.ok) throw new Error('Failed to load settings');
+      if (!response.ok) throw new Error("Failed to load settings");
       return response.json();
     },
     staleTime: 30000, // 30 seconds
   });
-  
+
   // Update settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<UserSettings>) => {
-      const response = await fetch('/api/settings/me', {
-        method: 'PUT',
+      const response = await fetch("/api/settings/me", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to save settings');
+        throw new Error(error.error || "Failed to save settings");
       }
-      
+
       return response.json();
     },
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ['settings', userId] });
+      queryClient.invalidateQueries({ queryKey: ["settings", userId] });
       setIsDirty(false);
       setLastSaved(new Date());
-      
+
       if (!context?.isAutoSave) {
         toast({
           title: "Settings saved",
@@ -140,24 +161,21 @@ export function SettingsPanel(props: SettingsPanelProps) {
       });
     },
   });
-  
+
   // Debounced auto-save
-  const debouncedSave = useDebouncedCallback(
-    async (data: UserSettings) => {
-      if (autoSave && isDirty) {
-        updateSettingsMutation.mutate(data, { context: { isAutoSave: true } });
-      }
-    },
-    autoSaveDelay
-  );
-  
+  const debouncedSave = useDebouncedCallback(async (data: UserSettings) => {
+    if (autoSave && isDirty) {
+      updateSettingsMutation.mutate(data, { context: { isAutoSave: true } });
+    }
+  }, autoSaveDelay);
+
   // Initialize form when settings are loaded
   useEffect(() => {
     if (settingsData?.data) {
       form.reset(settingsData.data);
     }
   }, [settingsData, form]);
-  
+
   // Watch for changes and trigger auto-save
   useEffect(() => {
     const subscription = form.watch((data) => {
@@ -166,21 +184,21 @@ export function SettingsPanel(props: SettingsPanelProps) {
         debouncedSave(data as UserSettings);
       }
     });
-    
+
     return () => subscription.unsubscribe();
   }, [form, autoSave, debouncedSave]);
-  
+
   // Handle real-time settings updates
   useEffect(() => {
-    if (lastUpdate?.type === 'settings_update') {
-      queryClient.invalidateQueries({ queryKey: ['settings', userId] });
+    if (lastUpdate?.type === "settings_update") {
+      queryClient.invalidateQueries({ queryKey: ["settings", userId] });
     }
   }, [lastUpdate, queryClient, userId]);
-  
+
   const handleSave = (data: UserSettings) => {
     updateSettingsMutation.mutate(data);
   };
-  
+
   if (isLoading) {
     return (
       <Card className={className}>
@@ -191,7 +209,7 @@ export function SettingsPanel(props: SettingsPanelProps) {
       </Card>
     );
   }
-  
+
   if (error) {
     return (
       <Card className={className}>
@@ -206,7 +224,7 @@ export function SettingsPanel(props: SettingsPanelProps) {
       </Card>
     );
   }
-  
+
   return (
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -221,9 +239,8 @@ export function SettingsPanel(props: SettingsPanelProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8">
-            
             {/* Push Notifications */}
-            {(section === 'all' || section === 'push') && (
+            {(section === "all" || section === "push") && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Push Notifications</h3>
                 <div className="space-y-4">
@@ -247,14 +264,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="push_preferences.social"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Social Activity</FormLabel>
+                          <FormLabel className="text-base">
+                            Social Activity
+                          </FormLabel>
                           <FormDescription>
                             Get notified about likes, matches, and messages
                           </FormDescription>
@@ -268,14 +287,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="push_preferences.matches"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">New Matches</FormLabel>
+                          <FormLabel className="text-base">
+                            New Matches
+                          </FormLabel>
                           <FormDescription>
                             Be notified when you get a new match
                           </FormDescription>
@@ -289,7 +310,7 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="push_preferences.messages"
@@ -310,14 +331,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="push_preferences.security"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-yellow-50">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Security Alerts</FormLabel>
+                          <FormLabel className="text-base">
+                            Security Alerts
+                          </FormLabel>
                           <FormDescription>
                             Important security alerts (recommended)
                           </FormDescription>
@@ -334,11 +357,12 @@ export function SettingsPanel(props: SettingsPanelProps) {
                 </div>
               </div>
             )}
-            
-            {(section === 'all' && (section === 'push' || section === 'email')) && <Separator />}
-            
+
+            {section === "all" &&
+              (section === "push" || section === "email") && <Separator />}
+
             {/* Email Notifications */}
-            {(section === 'all' || section === 'email') && (
+            {(section === "all" || section === "email") && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Email Notifications</h3>
                 <div className="space-y-4">
@@ -348,7 +372,9 @@ export function SettingsPanel(props: SettingsPanelProps) {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Marketing Emails</FormLabel>
+                          <FormLabel className="text-base">
+                            Marketing Emails
+                          </FormLabel>
                           <FormDescription>
                             Receive promotional emails and newsletters
                           </FormDescription>
@@ -362,14 +388,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="email_preferences.matches"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Match Notifications</FormLabel>
+                          <FormLabel className="text-base">
+                            Match Notifications
+                          </FormLabel>
                           <FormDescription>
                             Email notifications for new matches
                           </FormDescription>
@@ -383,14 +411,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="email_preferences.weekly_digest"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Weekly Digest</FormLabel>
+                          <FormLabel className="text-base">
+                            Weekly Digest
+                          </FormLabel>
                           <FormDescription>
                             Weekly summary of your activity and matches
                           </FormDescription>
@@ -404,23 +434,22 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="email_preferences.security"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-blue-50">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Security Emails</FormLabel>
+                          <FormLabel className="text-base">
+                            Security Emails
+                          </FormLabel>
                           <FormDescription>
                             Critical security alerts (cannot be disabled)
                           </FormDescription>
                         </div>
                         <FormControl>
-                          <Switch
-                            checked={true}
-                            disabled={true}
-                          />
+                          <Switch checked={true} disabled={true} />
                         </FormControl>
                       </FormItem>
                     )}
@@ -428,11 +457,12 @@ export function SettingsPanel(props: SettingsPanelProps) {
                 </div>
               </div>
             )}
-            
-            {(section === 'all' && (section === 'email' || section === 'privacy')) && <Separator />}
-            
+
+            {section === "all" &&
+              (section === "email" || section === "privacy") && <Separator />}
+
             {/* Privacy Settings */}
-            {(section === 'all' || section === 'privacy') && (
+            {(section === "all" || section === "privacy") && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Privacy & Visibility</h3>
                 <div className="space-y-4">
@@ -443,14 +473,23 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       <FormItem className="space-y-3">
                         <FormLabel>Profile Visibility</FormLabel>
                         <FormControl>
-                          <Select value={field.value} onValueChange={field.onChange}>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Select visibility" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="public">Public - Everyone can see</SelectItem>
-                              <SelectItem value="matches_only">Matches Only - Only matched users</SelectItem>
-                              <SelectItem value="private">Private - Hidden from discovery</SelectItem>
+                              <SelectItem value="public">
+                                Public - Everyone can see
+                              </SelectItem>
+                              <SelectItem value="matches_only">
+                                Matches Only - Only matched users
+                              </SelectItem>
+                              <SelectItem value="private">
+                                Private - Hidden from discovery
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -460,16 +499,19 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="privacy_preferences.discoverable"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Show in Discovery</FormLabel>
+                          <FormLabel className="text-base">
+                            Show in Discovery
+                          </FormLabel>
                           <FormDescription>
-                            Allow others to find you in search and recommendations
+                            Allow others to find you in search and
+                            recommendations
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -481,14 +523,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="privacy_preferences.show_online_status"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Show Online Status</FormLabel>
+                          <FormLabel className="text-base">
+                            Show Online Status
+                          </FormLabel>
                           <FormDescription>
                             Let others see when you're online
                           </FormDescription>
@@ -505,11 +549,14 @@ export function SettingsPanel(props: SettingsPanelProps) {
                 </div>
               </div>
             )}
-            
-            {(section === 'all' && (section === 'privacy' || section === 'discovery')) && <Separator />}
-            
+
+            {section === "all" &&
+              (section === "privacy" || section === "discovery") && (
+                <Separator />
+              )}
+
             {/* Discovery Settings */}
-            {(section === 'all' || section === 'discovery') && (
+            {(section === "all" || section === "discovery") && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Discovery Preferences</h3>
                 <div className="space-y-6">
@@ -531,7 +578,7 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="discovery_preferences.max_age"
@@ -550,13 +597,15 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="discovery_preferences.max_distance_km"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>Maximum Distance: {field.value} km</FormLabel>
+                        <FormLabel>
+                          Maximum Distance: {field.value} km
+                        </FormLabel>
                         <FormControl>
                           <Slider
                             min={1}
@@ -569,14 +618,16 @@ export function SettingsPanel(props: SettingsPanelProps) {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="discovery_preferences.required_verification"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Require Verification</FormLabel>
+                          <FormLabel className="text-base">
+                            Require Verification
+                          </FormLabel>
                           <FormDescription>
                             Only show verified profiles in your discovery
                           </FormDescription>
@@ -593,13 +644,15 @@ export function SettingsPanel(props: SettingsPanelProps) {
                 </div>
               </div>
             )}
-            
+
             {/* Save Button */}
             {showSaveButton && (
               <div className="flex justify-end">
-                <Button 
-                  type="submit" 
-                  disabled={updateSettingsMutation.isPending || (!isDirty && !autoSave)}
+                <Button
+                  type="submit"
+                  disabled={
+                    updateSettingsMutation.isPending || (!isDirty && !autoSave)
+                  }
                 >
                   {updateSettingsMutation.isPending ? (
                     <>

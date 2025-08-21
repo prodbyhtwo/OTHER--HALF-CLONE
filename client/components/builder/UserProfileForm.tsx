@@ -3,16 +3,38 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Save, MapPin, User as UserIcon, AlertTriangle, Plus, X } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  MapPin,
+  User as UserIcon,
+  AlertTriangle,
+  Plus,
+  X,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfileUpdates } from "@/hooks/use-realtime";
 import { validateComponentProps, userProfileFormSchema } from "./registry";
@@ -22,13 +44,29 @@ const profileFormSchema = z.object({
   full_name: z.string().min(1, "Name is required").max(255),
   age: z.number().min(18, "Must be 18 or older").max(100),
   bio: z.string().max(1000, "Bio must be under 1000 characters").optional(),
-  denomination: z.enum([
-    'catholic', 'protestant', 'orthodox', 'baptist', 'methodist',
-    'presbyterian', 'pentecostal', 'lutheran', 'anglican', 
-    'evangelical', 'non_denominational', 'other'
-  ]).optional(),
-  church_attendance: z.enum(['weekly', 'monthly', 'occasionally', 'holidays_only', 'never']).optional(),
-  interests: z.array(z.string()).max(20, "Maximum 20 interests allowed").optional(),
+  denomination: z
+    .enum([
+      "catholic",
+      "protestant",
+      "orthodox",
+      "baptist",
+      "methodist",
+      "presbyterian",
+      "pentecostal",
+      "lutheran",
+      "anglican",
+      "evangelical",
+      "non_denominational",
+      "other",
+    ])
+    .optional(),
+  church_attendance: z
+    .enum(["weekly", "monthly", "occasionally", "holidays_only", "never"])
+    .optional(),
+  interests: z
+    .array(z.string())
+    .max(20, "Maximum 20 interests allowed")
+    .optional(),
   looking_for: z.string().max(100).optional(),
 });
 
@@ -66,97 +104,111 @@ interface User {
 }
 
 const DENOMINATION_LABELS = {
-  'catholic': 'Catholic',
-  'protestant': 'Protestant',
-  'orthodox': 'Orthodox',
-  'baptist': 'Baptist',
-  'methodist': 'Methodist',
-  'presbyterian': 'Presbyterian',
-  'pentecostal': 'Pentecostal',
-  'lutheran': 'Lutheran',
-  'anglican': 'Anglican',
-  'evangelical': 'Evangelical',
-  'non_denominational': 'Non-denominational',
-  'other': 'Other'
+  catholic: "Catholic",
+  protestant: "Protestant",
+  orthodox: "Orthodox",
+  baptist: "Baptist",
+  methodist: "Methodist",
+  presbyterian: "Presbyterian",
+  pentecostal: "Pentecostal",
+  lutheran: "Lutheran",
+  anglican: "Anglican",
+  evangelical: "Evangelical",
+  non_denominational: "Non-denominational",
+  other: "Other",
 };
 
 const ATTENDANCE_LABELS = {
-  'weekly': 'Weekly',
-  'monthly': 'Monthly',
-  'occasionally': 'Occasionally',
-  'holidays_only': 'Holidays only',
-  'never': 'Never'
+  weekly: "Weekly",
+  monthly: "Monthly",
+  occasionally: "Occasionally",
+  holidays_only: "Holidays only",
+  never: "Never",
 };
 
 export function UserProfileForm(props: UserProfileFormProps) {
-  const validatedProps = validateComponentProps('UserProfileForm', props, userProfileFormSchema);
-  const { userId, showFullForm = true, onSaveSuccess, redirectAfterSave, className } = validatedProps;
-  
+  const validatedProps = validateComponentProps(
+    "UserProfileForm",
+    props,
+    userProfileFormSchema,
+  );
+  const {
+    userId,
+    showFullForm = true,
+    onSaveSuccess,
+    redirectAfterSave,
+    className,
+  } = validatedProps;
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { lastUpdate } = useProfileUpdates(userId);
-  
-  const [newInterest, setNewInterest] = useState('');
-  
+
+  const [newInterest, setNewInterest] = useState("");
+
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      full_name: '',
+      full_name: "",
       age: 18,
-      bio: '',
+      bio: "",
       interests: [],
-      looking_for: '',
+      looking_for: "",
     },
   });
-  
+
   // Get current user profile
-  const { data: userData, isLoading, error } = useQuery<{
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery<{
     success: boolean;
     data: User;
   }>({
-    queryKey: ['profile', userId],
+    queryKey: ["profile", userId],
     queryFn: async () => {
       const response = await fetch(`/api/users/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
       });
-      if (!response.ok) throw new Error('Failed to load profile');
+      if (!response.ok) throw new Error("Failed to load profile");
       return response.json();
     },
     staleTime: 30000, // 30 seconds
   });
-  
+
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
       const response = await fetch(`/api/users/${userId}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update profile');
+        throw new Error(error.error || "Failed to update profile");
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['profile', userId] });
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
-      
+
       if (onSaveSuccess) {
         console.log(`Triggering action: ${onSaveSuccess}`, data);
       }
-      
+
       if (redirectAfterSave) {
         window.location.href = redirectAfterSave;
       }
@@ -169,7 +221,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
       });
     },
   });
-  
+
   // Initialize form when user data is loaded
   useEffect(() => {
     if (userData?.data) {
@@ -177,30 +229,30 @@ export function UserProfileForm(props: UserProfileFormProps) {
       form.reset({
         full_name: user.full_name,
         age: user.age,
-        bio: user.bio || '',
+        bio: user.bio || "",
         denomination: user.denomination as any,
         church_attendance: user.church_attendance as any,
         interests: user.interests || [],
-        looking_for: user.looking_for || '',
+        looking_for: user.looking_for || "",
       });
     }
   }, [userData, form]);
-  
+
   // Handle real-time profile updates
   useEffect(() => {
-    if (lastUpdate?.type === 'profile_update') {
-      queryClient.invalidateQueries({ queryKey: ['profile', userId] });
+    if (lastUpdate?.type === "profile_update") {
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     }
   }, [lastUpdate, queryClient, userId]);
-  
+
   const handleSave = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
   };
-  
+
   const addInterest = () => {
     if (!newInterest.trim()) return;
-    
-    const currentInterests = form.getValues('interests') || [];
+
+    const currentInterests = form.getValues("interests") || [];
     if (currentInterests.length >= 20) {
       toast({
         title: "Maximum interests reached",
@@ -209,7 +261,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
       });
       return;
     }
-    
+
     if (currentInterests.includes(newInterest.trim())) {
       toast({
         title: "Interest already added",
@@ -218,23 +270,26 @@ export function UserProfileForm(props: UserProfileFormProps) {
       });
       return;
     }
-    
-    form.setValue('interests', [...currentInterests, newInterest.trim()]);
-    setNewInterest('');
+
+    form.setValue("interests", [...currentInterests, newInterest.trim()]);
+    setNewInterest("");
   };
-  
+
   const removeInterest = (index: number) => {
-    const currentInterests = form.getValues('interests') || [];
-    form.setValue('interests', currentInterests.filter((_, i) => i !== index));
+    const currentInterests = form.getValues("interests") || [];
+    form.setValue(
+      "interests",
+      currentInterests.filter((_, i) => i !== index),
+    );
   };
-  
+
   const handleInterestKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       addInterest();
     }
   };
-  
+
   if (isLoading) {
     return (
       <Card className={className}>
@@ -245,7 +300,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
       </Card>
     );
   }
-  
+
   if (error) {
     return (
       <Card className={className}>
@@ -260,9 +315,9 @@ export function UserProfileForm(props: UserProfileFormProps) {
       </Card>
     );
   }
-  
-  const currentInterests = form.watch('interests') || [];
-  
+
+  const currentInterests = form.watch("interests") || [];
+
   return (
     <Card className={className}>
       <CardHeader>
@@ -274,11 +329,10 @@ export function UserProfileForm(props: UserProfileFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
-            
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Basic Information</h3>
-              
+
               <FormField
                 control={form.control}
                 name="full_name"
@@ -292,7 +346,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="age"
@@ -300,10 +354,12 @@ export function UserProfileForm(props: UserProfileFormProps) {
                   <FormItem>
                     <FormLabel>Age</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
                         min={18}
                         max={100}
                       />
@@ -312,7 +368,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
                   </FormItem>
                 )}
               />
-              
+
               {showFullForm && (
                 <FormField
                   control={form.control}
@@ -321,14 +377,15 @@ export function UserProfileForm(props: UserProfileFormProps) {
                     <FormItem>
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          {...field} 
+                        <Textarea
+                          {...field}
                           placeholder="Tell others about yourself..."
                           rows={4}
                         />
                       </FormControl>
                       <FormDescription>
-                        Share something about your faith journey, interests, or what you're looking for.
+                        Share something about your faith journey, interests, or
+                        what you're looking for.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -336,55 +393,65 @@ export function UserProfileForm(props: UserProfileFormProps) {
                 />
               )}
             </div>
-            
+
             {/* Faith Information */}
             {showFullForm && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Faith Background</h3>
-                
+
                 <FormField
                   control={form.control}
                   name="denomination"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Denomination</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select your denomination" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.entries(DENOMINATION_LABELS).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
+                          {Object.entries(DENOMINATION_LABELS).map(
+                            ([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="church_attendance"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Church Attendance</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="How often do you attend church?" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.entries(ATTENDANCE_LABELS).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
+                          {Object.entries(ATTENDANCE_LABELS).map(
+                            ([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -393,12 +460,12 @@ export function UserProfileForm(props: UserProfileFormProps) {
                 />
               </div>
             )}
-            
+
             {/* Interests */}
             {showFullForm && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Interests</h3>
-                
+
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <Input
@@ -408,20 +475,26 @@ export function UserProfileForm(props: UserProfileFormProps) {
                       onKeyPress={handleInterestKeyPress}
                       disabled={currentInterests.length >= 20}
                     />
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={addInterest}
-                      disabled={!newInterest.trim() || currentInterests.length >= 20}
+                      disabled={
+                        !newInterest.trim() || currentInterests.length >= 20
+                      }
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   {currentInterests.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {currentInterests.map((interest, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
                           {interest}
                           <Button
                             type="button"
@@ -436,14 +509,15 @@ export function UserProfileForm(props: UserProfileFormProps) {
                       ))}
                     </div>
                   )}
-                  
+
                   <FormDescription>
-                    Add up to 20 interests to help others learn about you. ({currentInterests.length}/20)
+                    Add up to 20 interests to help others learn about you. (
+                    {currentInterests.length}/20)
                   </FormDescription>
                 </div>
               </div>
             )}
-            
+
             {/* What You're Looking For */}
             {showFullForm && (
               <FormField
@@ -453,8 +527,8 @@ export function UserProfileForm(props: UserProfileFormProps) {
                   <FormItem>
                     <FormLabel>What You're Looking For</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
+                      <Input
+                        {...field}
                         placeholder="e.g., Serious relationship, friendship, fellowship"
                       />
                     </FormControl>
@@ -466,7 +540,7 @@ export function UserProfileForm(props: UserProfileFormProps) {
                 )}
               />
             )}
-            
+
             {/* Current Location Display */}
             {userData?.data.location && (
               <div className="p-3 bg-muted rounded-lg">
@@ -475,23 +549,20 @@ export function UserProfileForm(props: UserProfileFormProps) {
                   <span className="font-medium">Current Location</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {userData.data.location.locality && userData.data.location.country 
+                  {userData.data.location.locality &&
+                  userData.data.location.country
                     ? `${userData.data.location.locality}, ${userData.data.location.country}`
-                    : `${userData.data.location.lat.toFixed(4)}, ${userData.data.location.lng.toFixed(4)}`
-                  }
+                    : `${userData.data.location.lat.toFixed(4)}, ${userData.data.location.lng.toFixed(4)}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Use the Location Share component to update your location.
                 </p>
               </div>
             )}
-            
+
             {/* Save Button */}
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                disabled={updateProfileMutation.isPending}
-              >
+              <Button type="submit" disabled={updateProfileMutation.isPending}>
                 {updateProfileMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -16,7 +16,7 @@
           "description": "Receive marketing push notifications"
         },
         "social": {
-          "type": "boolean", 
+          "type": "boolean",
           "default": true,
           "description": "Receive social activity push notifications (likes, matches, messages)"
         },
@@ -41,11 +41,18 @@
           "description": "Receive new like push notifications"
         }
       },
-      "required": ["marketing", "social", "security", "matches", "messages", "likes"],
+      "required": [
+        "marketing",
+        "social",
+        "security",
+        "matches",
+        "messages",
+        "likes"
+      ],
       "description": "Push notification preferences"
     },
     "email_preferences": {
-      "type": "object", 
+      "type": "object",
       "properties": {
         "marketing": {
           "type": "boolean",
@@ -78,7 +85,14 @@
           "description": "Receive weekly activity digest emails"
         }
       },
-      "required": ["marketing", "social", "security", "matches", "messages", "weekly_digest"],
+      "required": [
+        "marketing",
+        "social",
+        "security",
+        "matches",
+        "messages",
+        "weekly_digest"
+      ],
       "description": "Email notification preferences"
     },
     "privacy_preferences": {
@@ -116,7 +130,14 @@
           "description": "Allow others to discover your profile"
         }
       },
-      "required": ["profile_visibility", "show_age", "show_distance", "show_last_active", "show_online_status", "discoverable"],
+      "required": [
+        "profile_visibility",
+        "show_age",
+        "show_distance",
+        "show_last_active",
+        "show_online_status",
+        "discoverable"
+      ],
       "description": "Privacy and visibility preferences"
     },
     "discovery_preferences": {
@@ -149,7 +170,7 @@
             "type": "string",
             "enum": [
               "catholic",
-              "protestant", 
+              "protestant",
               "orthodox",
               "baptist",
               "methodist",
@@ -172,7 +193,13 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["weekly", "monthly", "occasionally", "holidays_only", "never"]
+            "enum": [
+              "weekly",
+              "monthly",
+              "occasionally",
+              "holidays_only",
+              "never"
+            ]
           },
           "description": "Preferred church attendance frequency"
         }
@@ -203,14 +230,14 @@
     },
     "updated_at": {
       "type": "string",
-      "format": "date-time", 
+      "format": "date-time",
       "description": "When the settings were last updated"
     }
   },
   "required": [
     "user_id",
     "push_preferences",
-    "email_preferences", 
+    "email_preferences",
     "privacy_preferences",
     "discovery_preferences",
     "blocked_user_ids",

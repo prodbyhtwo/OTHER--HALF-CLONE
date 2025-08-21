@@ -36,7 +36,10 @@
         "properties": {
           "id": { "type": "string" },
           "url": { "type": "string", "format": "uri" },
-          "type": { "type": "string", "enum": ["image", "video", "audio", "document"] },
+          "type": {
+            "type": "string",
+            "enum": ["image", "video", "audio", "document"]
+          },
           "filename": { "type": "string" },
           "size": { "type": "number" },
           "mime_type": { "type": "string" }
@@ -104,7 +107,7 @@
   },
   "required": [
     "id",
-    "conversation_id", 
+    "conversation_id",
     "sender_id",
     "recipient_id",
     "content",

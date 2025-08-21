@@ -1,29 +1,29 @@
 // tests/e2e/builder-components.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Builder Components Integration', () => {
+test.describe("Builder Components Integration", () => {
   test.beforeEach(async ({ page }) => {
     // Mock authentication
     await page.addInitScript(() => {
-      window.localStorage.setItem('auth_token', 'test_token_123');
-      window.localStorage.setItem('user_id', 'user1');
+      window.localStorage.setItem("auth_token", "test_token_123");
+      window.localStorage.setItem("user_id", "user1");
     });
 
     // Mock all API endpoints
-    await page.route('/api/**', (route) => {
+    await page.route("/api/**", (route) => {
       const url = route.request().url();
       const method = route.request().method();
 
       // Settings API
-      if (url.includes('/api/settings/me')) {
-        if (method === 'GET') {
+      if (url.includes("/api/settings/me")) {
+        if (method === "GET") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                user_id: 'user1',
+                user_id: "user1",
                 push_preferences: {
                   marketing: true,
                   social: true,
@@ -41,7 +41,7 @@ test.describe('Builder Components Integration', () => {
                   weekly_digest: false,
                 },
                 privacy_preferences: {
-                  profile_visibility: 'public',
+                  profile_visibility: "public",
                   show_age: true,
                   show_distance: true,
                   show_last_active: true,
@@ -54,175 +54,175 @@ test.describe('Builder Components Integration', () => {
                   max_distance_km: 50,
                   required_verification: false,
                 },
-                theme: 'system',
-                language: 'en',
-                updated_at: '2024-01-01T00:00:00Z',
-              }
-            })
+                theme: "system",
+                language: "en",
+                updated_at: "2024-01-01T00:00:00Z",
+              },
+            }),
           });
-        } else if (method === 'PUT') {
+        } else if (method === "PUT") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                user_id: 'user1',
+                user_id: "user1",
                 updated_at: new Date().toISOString(),
               },
-              message: 'Settings updated successfully'
-            })
+              message: "Settings updated successfully",
+            }),
           });
         }
       }
 
       // User profile API
-      else if (url.includes('/api/users/user1')) {
-        if (method === 'GET') {
+      else if (url.includes("/api/users/user1")) {
+        if (method === "GET") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                id: 'user1',
-                email: 'test@example.com',
-                full_name: 'Test User',
+                id: "user1",
+                email: "test@example.com",
+                full_name: "Test User",
                 age: 25,
-                bio: 'Test bio content',
-                denomination: 'catholic',
-                church_attendance: 'weekly',
-                interests: ['reading', 'hiking', 'worship'],
-                verification_status: 'verified',
-                created_at: '2024-01-01T00:00:00Z',
-                updated_at: '2024-01-01T00:00:00Z',
+                bio: "Test bio content",
+                denomination: "catholic",
+                church_attendance: "weekly",
+                interests: ["reading", "hiking", "worship"],
+                verification_status: "verified",
+                created_at: "2024-01-01T00:00:00Z",
+                updated_at: "2024-01-01T00:00:00Z",
                 location: {
                   lat: 40.7128,
-                  lng: -74.0060,
-                  locality: 'New York',
-                  country: 'US'
-                }
-              }
-            })
+                  lng: -74.006,
+                  locality: "New York",
+                  country: "US",
+                },
+              },
+            }),
           });
-        } else if (method === 'PATCH') {
+        } else if (method === "PATCH") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                id: 'user1',
-                full_name: 'Updated Name',
+                id: "user1",
+                full_name: "Updated Name",
                 updated_at: new Date().toISOString(),
               },
-              message: 'Profile updated successfully'
-            })
+              message: "Profile updated successfully",
+            }),
           });
         }
       }
 
       // Blocks API
-      else if (url.includes('/api/blocks')) {
-        if (method === 'GET') {
+      else if (url.includes("/api/blocks")) {
+        if (method === "GET") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
                 blockedUserIds: [],
-                total: 0
-              }
-            })
+                total: 0,
+              },
+            }),
           });
-        } else if (method === 'POST') {
+        } else if (method === "POST") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                blockedUserId: 'user2',
-                blockedAt: new Date().toISOString()
+                blockedUserId: "user2",
+                blockedAt: new Date().toISOString(),
               },
-              message: 'User blocked successfully'
-            })
+              message: "User blocked successfully",
+            }),
           });
-        } else if (method === 'DELETE') {
+        } else if (method === "DELETE") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
-                unblockedUserId: 'user2',
-                unblockedAt: new Date().toISOString()
+                unblockedUserId: "user2",
+                unblockedAt: new Date().toISOString(),
               },
-              message: 'User unblocked successfully'
-            })
+              message: "User unblocked successfully",
+            }),
           });
         }
       }
 
       // Location API
-      else if (url.includes('/api/location')) {
-        if (url.includes('/api/location/permission')) {
+      else if (url.includes("/api/location")) {
+        if (url.includes("/api/location/permission")) {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
-              data: { permission: 'prompt' }
-            })
+              data: { permission: "prompt" },
+            }),
           });
-        } else if (method === 'GET') {
+        } else if (method === "GET") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
-              data: { location: null }
-            })
+              data: { location: null },
+            }),
           });
-        } else if (method === 'PUT') {
+        } else if (method === "PUT") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
                 location: {
                   lat: 40.7128,
-                  lng: -74.0060,
-                  locality: 'New York',
-                  country: 'US',
+                  lng: -74.006,
+                  locality: "New York",
+                  country: "US",
                   sharing: true,
-                  timestamp: new Date().toISOString()
-                }
+                  timestamp: new Date().toISOString(),
+                },
               },
-              message: 'Location updated successfully'
-            })
+              message: "Location updated successfully",
+            }),
           });
-        } else if (url.includes('/manual') && method === 'PUT') {
+        } else if (url.includes("/manual") && method === "PUT") {
           route.fulfill({
             status: 200,
-            contentType: 'application/json',
+            contentType: "application/json",
             body: JSON.stringify({
               success: true,
               data: {
                 location: {
                   lat: 40.7128,
-                  lng: -74.0060,
-                  locality: 'New York',
-                  country: 'US',
-                  source: 'manual',
+                  lng: -74.006,
+                  locality: "New York",
+                  country: "US",
+                  source: "manual",
                   sharing: true,
-                  timestamp: new Date().toISOString()
-                }
+                  timestamp: new Date().toISOString(),
+                },
               },
-              message: 'Location set manually'
-            })
+              message: "Location set manually",
+            }),
           });
         }
       }
@@ -231,14 +231,16 @@ test.describe('Builder Components Integration', () => {
       else {
         route.fulfill({
           status: 404,
-          contentType: 'application/json',
-          body: JSON.stringify({ error: 'Not found' })
+          contentType: "application/json",
+          body: JSON.stringify({ error: "Not found" }),
         });
       }
     });
   });
 
-  test('User Profile Form - should load and update profile data', async ({ page }) => {
+  test("User Profile Form - should load and update profile data", async ({
+    page,
+  }) => {
     // Create a test page with UserProfileForm
     await page.setContent(`
       <!DOCTYPE html>
@@ -330,23 +332,23 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Wait for profile to load
-    await expect(page.getByText('Edit Profile')).toBeVisible();
-    await expect(page.getByTestId('full-name-input')).toHaveValue('Test User');
-    await expect(page.getByTestId('age-input')).toHaveValue('25');
+    await expect(page.getByText("Edit Profile")).toBeVisible();
+    await expect(page.getByTestId("full-name-input")).toHaveValue("Test User");
+    await expect(page.getByTestId("age-input")).toHaveValue("25");
 
     // Update profile data
-    await page.getByTestId('full-name-input').fill('Updated Name');
-    await page.getByTestId('age-input').fill('26');
-    await page.getByTestId('bio-input').fill('Updated bio content');
+    await page.getByTestId("full-name-input").fill("Updated Name");
+    await page.getByTestId("age-input").fill("26");
+    await page.getByTestId("bio-input").fill("Updated bio content");
 
     // Submit form
-    await page.getByTestId('save-button').click();
+    await page.getByTestId("save-button").click();
 
     // Should show success message
-    await expect(page.locator('text=Profile updated!')).toBeVisible();
+    await expect(page.locator("text=Profile updated!")).toBeVisible();
   });
 
-  test('Settings Panel - should load and update settings', async ({ page }) => {
+  test("Settings Panel - should load and update settings", async ({ page }) => {
     // Create test page with Settings Panel
     await page.setContent(`
       <!DOCTYPE html>
@@ -420,21 +422,23 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Wait for settings to load
-    await expect(page.getByText('Settings')).toBeVisible();
-    await expect(page.getByText('Push Notifications')).toBeVisible();
+    await expect(page.getByText("Settings")).toBeVisible();
+    await expect(page.getByText("Push Notifications")).toBeVisible();
 
     // Marketing switch should be checked by default
-    await expect(page.getByTestId('marketing-switch')).toBeChecked();
+    await expect(page.getByTestId("marketing-switch")).toBeChecked();
 
     // Toggle marketing notifications
-    await page.getByTestId('marketing-switch').click();
-    await expect(page.locator('text=Settings saved!')).toBeVisible();
+    await page.getByTestId("marketing-switch").click();
+    await expect(page.locator("text=Settings saved!")).toBeVisible();
 
     // Switch should now be unchecked
-    await expect(page.getByTestId('marketing-switch')).not.toBeChecked();
+    await expect(page.getByTestId("marketing-switch")).not.toBeChecked();
   });
 
-  test('Block User Button - should handle block/unblock actions', async ({ page }) => {
+  test("Block User Button - should handle block/unblock actions", async ({
+    page,
+  }) => {
     await page.setContent(`
       <!DOCTYPE html>
       <html>
@@ -529,45 +533,51 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Initially should show block button
-    await expect(page.getByTestId('block-button')).toBeVisible();
+    await expect(page.getByTestId("block-button")).toBeVisible();
 
     // Click block button to open dialog
-    await page.getByTestId('block-button').click();
-    await expect(page.getByText('Are you sure you want to block this user?')).toBeVisible();
+    await page.getByTestId("block-button").click();
+    await expect(
+      page.getByText("Are you sure you want to block this user?"),
+    ).toBeVisible();
 
     // Confirm blocking
-    await page.getByTestId('confirm-block').click();
-    await expect(page.locator('text=User blocked successfully')).toBeVisible();
+    await page.getByTestId("confirm-block").click();
+    await expect(page.locator("text=User blocked successfully")).toBeVisible();
 
     // Should now show unblock button
-    await expect(page.getByTestId('unblock-button')).toBeVisible();
+    await expect(page.getByTestId("unblock-button")).toBeVisible();
 
     // Test unblocking
-    await page.getByTestId('unblock-button').click();
-    await expect(page.locator('text=User unblocked successfully')).toBeVisible();
+    await page.getByTestId("unblock-button").click();
+    await expect(
+      page.locator("text=User unblocked successfully"),
+    ).toBeVisible();
 
     // Should be back to block button
-    await expect(page.getByTestId('block-button')).toBeVisible();
+    await expect(page.getByTestId("block-button")).toBeVisible();
   });
 
-  test('Location Share - should handle GPS and manual location', async ({ page }) => {
+  test("Location Share - should handle GPS and manual location", async ({
+    page,
+  }) => {
     // Mock geolocation API
     await page.addInitScript(() => {
       // Mock successful geolocation
-      Object.defineProperty(navigator, 'geolocation', {
+      Object.defineProperty(navigator, "geolocation", {
         value: {
           getCurrentPosition: (success) => {
             setTimeout(() => {
               success({
                 coords: {
                   latitude: 40.7128,
-                  longitude: -74.0060,
-                  accuracy: 10
-                }
+                  longitude: -74.006,
+                  accuracy: 10,
+                },
               });
             }, 100);
-          }
-        }
+          },
+        },
       });
     });
 
@@ -665,21 +675,27 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Should show location sharing interface
-    await expect(page.getByText('Location Sharing')).toBeVisible();
-    await expect(page.getByTestId('use-gps-button')).toBeVisible();
+    await expect(page.getByText("Location Sharing")).toBeVisible();
+    await expect(page.getByTestId("use-gps-button")).toBeVisible();
 
     // Test GPS location
-    await page.getByTestId('use-gps-button').click();
-    await expect(page.locator('text=Location updated successfully')).toBeVisible();
-    await expect(page.getByTestId('current-location')).toContainText('New York, US');
+    await page.getByTestId("use-gps-button").click();
+    await expect(
+      page.locator("text=Location updated successfully"),
+    ).toBeVisible();
+    await expect(page.getByTestId("current-location")).toContainText(
+      "New York, US",
+    );
 
     // Test manual address entry
-    await page.getByTestId('address-input').fill('San Francisco, CA');
-    await page.getByTestId('set-address-button').click();
-    await expect(page.locator('text=Location set from address')).toBeVisible();
+    await page.getByTestId("address-input").fill("San Francisco, CA");
+    await page.getByTestId("set-address-button").click();
+    await expect(page.locator("text=Location set from address")).toBeVisible();
   });
 
-  test('Primary and Link Buttons - should handle navigation and actions', async ({ page }) => {
+  test("Primary and Link Buttons - should handle navigation and actions", async ({
+    page,
+  }) => {
     await page.setContent(`
       <!DOCTYPE html>
       <html>
@@ -733,22 +749,24 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Test primary button with action
-    await expect(page.getByTestId('primary-button')).toBeVisible();
-    await page.getByTestId('primary-button').click();
-    await expect(page.getByTestId('action-result')).toContainText('Action triggered: save-profile');
+    await expect(page.getByTestId("primary-button")).toBeVisible();
+    await page.getByTestId("primary-button").click();
+    await expect(page.getByTestId("action-result")).toContainText(
+      "Action triggered: save-profile",
+    );
 
     // Test link button navigation
-    const linkButton = page.getByTestId('link-button');
+    const linkButton = page.getByTestId("link-button");
     await expect(linkButton).toBeVisible();
-    await expect(linkButton).toHaveAttribute('href', '/profile/user1');
+    await expect(linkButton).toHaveAttribute("href", "/profile/user1");
 
     // Test disabled button
-    const disabledButton = page.getByTestId('disabled-button');
+    const disabledButton = page.getByTestId("disabled-button");
     await expect(disabledButton).toBeVisible();
     await expect(disabledButton).toBeDisabled();
   });
 
-  test('Accessibility - should meet WCAG standards', async ({ page }) => {
+  test("Accessibility - should meet WCAG standards", async ({ page }) => {
     // Create test page with accessibility features
     await page.setContent(`
       <!DOCTYPE html>
@@ -829,93 +847,102 @@ test.describe('Builder Components Integration', () => {
     `);
 
     // Test keyboard navigation
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#full-name')).toBeFocused();
-    
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#email')).toBeFocused();
-    
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#bio')).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#full-name")).toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#email")).toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await expect(page.locator("#bio")).toBeFocused();
 
     // Test form labels and ARIA
-    const nameInput = page.locator('#full-name');
-    await expect(nameInput).toHaveAttribute('aria-describedby', 'name-help');
-    
+    const nameInput = page.locator("#full-name");
+    await expect(nameInput).toHaveAttribute("aria-describedby", "name-help");
+
     const nameLabel = page.locator('label[for="full-name"]');
     await expect(nameLabel).toBeVisible();
-    
+
     // Test ARIA live regions
     const statusRegion = page.locator('[aria-live="polite"]');
     await expect(statusRegion).toBeVisible();
-    
+
     // Test headings hierarchy
-    await expect(page.locator('h1')).toContainText('Accessibility Test Page');
-    await expect(page.locator('h2').first()).toContainText('User Profile');
-    await expect(page.locator('h3')).toContainText('Notification Preferences');
-    
+    await expect(page.locator("h1")).toContainText("Accessibility Test Page");
+    await expect(page.locator("h2").first()).toContainText("User Profile");
+    await expect(page.locator("h3")).toContainText("Notification Preferences");
+
     // Test focus management
     await page.locator('button[type="submit"]').focus();
     await expect(page.locator('button[type="submit"]')).toBeFocused();
-    
+
     // Test form validation
-    await page.locator('#full-name').fill('');
+    await page.locator("#full-name").fill("");
     await page.locator('button[type="submit"]').click();
-    
+
     // Should show validation error (HTML5 validation)
-    const validationMessage = await page.locator('#full-name').evaluate(
-      (el: HTMLInputElement) => el.validationMessage
-    );
+    const validationMessage = await page
+      .locator("#full-name")
+      .evaluate((el: HTMLInputElement) => el.validationMessage);
     expect(validationMessage).toBeTruthy();
   });
 });
 
-test.describe('Builder Components Performance', () => {
-  test('should load components efficiently', async ({ page }) => {
-    await page.goto('/profile');
-    
+test.describe("Builder Components Performance", () => {
+  test("should load components efficiently", async ({ page }) => {
+    await page.goto("/profile");
+
     // Measure performance
     const performanceMetrics = await page.evaluate(() => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      const paint = performance.getEntriesByType('paint');
-      
+      const navigation = performance.getEntriesByType(
+        "navigation",
+      )[0] as PerformanceNavigationTiming;
+      const paint = performance.getEntriesByType("paint");
+
       return {
-        domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+        domContentLoaded:
+          navigation.domContentLoadedEventEnd -
+          navigation.domContentLoadedEventStart,
         loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
-        firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
+        firstPaint: paint.find((p) => p.name === "first-paint")?.startTime || 0,
+        firstContentfulPaint:
+          paint.find((p) => p.name === "first-contentful-paint")?.startTime ||
+          0,
       };
     });
-    
+
     // Performance assertions
     expect(performanceMetrics.domContentLoaded).toBeLessThan(1000); // < 1s
     expect(performanceMetrics.firstContentfulPaint).toBeLessThan(2000); // < 2s
   });
-  
-  test('should handle large data sets efficiently', async ({ page }) => {
+
+  test("should handle large data sets efficiently", async ({ page }) => {
     // Mock large dataset
-    await page.route('/api/users/user1', (route) => {
-      const largeInterests = Array.from({ length: 100 }, (_, i) => `Interest ${i + 1}`);
-      
+    await page.route("/api/users/user1", (route) => {
+      const largeInterests = Array.from(
+        { length: 100 },
+        (_, i) => `Interest ${i + 1}`,
+      );
+
       route.fulfill({
         status: 200,
-        contentType: 'application/json',
+        contentType: "application/json",
         body: JSON.stringify({
           success: true,
           data: {
-            id: 'user1',
-            full_name: 'Test User',
+            id: "user1",
+            full_name: "Test User",
             age: 25,
             interests: largeInterests,
             // ... other fields
-          }
-        })
+          },
+        }),
       });
     });
-    
-    await page.goto('/profile/edit');
-    
+
+    await page.goto("/profile/edit");
+
     // Should render without performance issues
-    await expect(page.getByText('Edit Profile')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Edit Profile")).toBeVisible({ timeout: 5000 });
   });
 });

@@ -1,16 +1,31 @@
 // client/components/builder/LocationShare.tsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, Navigation, AlertTriangle, Check, Loader2, MapPinOff, Clock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useLocationUpdates } from '@/hooks/use-realtime';
-import { validateComponentProps, locationShareSchema } from './registry';
+import React, { useState, useEffect, useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  MapPin,
+  Navigation,
+  AlertTriangle,
+  Check,
+  Loader2,
+  MapPinOff,
+  Clock,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useLocationUpdates } from "@/hooks/use-realtime";
+import { validateComponentProps, locationShareSchema } from "./registry";
 
 export interface LocationShareProps {
   userId: string;
@@ -27,38 +42,52 @@ interface LocationData {
   locality?: string;
   country?: string;
   sharing: boolean;
-  source: 'gps' | 'network' | 'manual';
+  source: "gps" | "network" | "manual";
   timestamp: string;
   updated_at?: string;
 }
 
 interface LocationPermission {
-  permission: 'granted' | 'denied' | 'prompt';
+  permission: "granted" | "denied" | "prompt";
   updated_at?: string;
 }
 
 export function LocationShare(props: LocationShareProps) {
-  const validatedProps = validateComponentProps('LocationShare', props, locationShareSchema);
-  const { userId, autoRequest = false, showAccuracy = false, onLocationUpdate, className } = validatedProps;
-  
+  const validatedProps = validateComponentProps(
+    "LocationShare",
+    props,
+    locationShareSchema,
+  );
+  const {
+    userId,
+    autoRequest = false,
+    showAccuracy = false,
+    onLocationUpdate,
+    className,
+  } = validatedProps;
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { lastUpdate } = useLocationUpdates(userId);
 
-  const [manualAddress, setManualAddress] = useState('');
-  const [locationTimeout, setLocationTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [manualAddress, setManualAddress] = useState("");
+  const [locationTimeout, setLocationTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   // Get current location data
   const { data: locationData, error: locationError } = useQuery<{
     success: boolean;
     data: { location: LocationData | null };
   }>({
-    queryKey: ['location', userId],
+    queryKey: ["location", userId],
     queryFn: async () => {
-      const response = await fetch('/api/location', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+      const response = await fetch("/api/location", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
       });
-      if (!response.ok) throw new Error('Failed to fetch location');
+      if (!response.ok) throw new Error("Failed to fetch location");
       return response.json();
     },
     staleTime: 30000, // 30 seconds
@@ -69,32 +98,40 @@ export function LocationShare(props: LocationShareProps) {
     success: boolean;
     data: LocationPermission;
   }>({
-    queryKey: ['location-permission', userId],
+    queryKey: ["location-permission", userId],
     queryFn: async () => {
-      const response = await fetch('/api/location/permission', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+      const response = await fetch("/api/location/permission", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
       });
-      if (!response.ok) throw new Error('Failed to fetch permission');
+      if (!response.ok) throw new Error("Failed to fetch permission");
       return response.json();
     },
   });
 
   // Update location permission
   const updatePermissionMutation = useMutation({
-    mutationFn: async (permissionData: { granted?: boolean; denied?: boolean; error?: string }) => {
-      const response = await fetch('/api/location/permission', {
-        method: 'POST',
+    mutationFn: async (permissionData: {
+      granted?: boolean;
+      denied?: boolean;
+      error?: string;
+    }) => {
+      const response = await fetch("/api/location/permission", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify(permissionData),
       });
-      if (!response.ok) throw new Error('Failed to update permission');
+      if (!response.ok) throw new Error("Failed to update permission");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['location-permission', userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["location-permission", userId],
+      });
     },
   });
 
@@ -104,31 +141,31 @@ export function LocationShare(props: LocationShareProps) {
       lat: number;
       lng: number;
       accuracy?: number;
-      source: 'gps' | 'network' | 'manual';
+      source: "gps" | "network" | "manual";
       sharing?: boolean;
       timestamp?: string;
     }) => {
-      const response = await fetch('/api/location', {
-        method: 'PUT',
+      const response = await fetch("/api/location", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify(locationData),
       });
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update location');
+        throw new Error(error.error || "Failed to update location");
       }
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['location', userId] });
+      queryClient.invalidateQueries({ queryKey: ["location", userId] });
       toast({
         title: "Location updated",
         description: "Your location has been successfully updated.",
       });
-      
+
       if (onLocationUpdate) {
         console.log(`Triggering action: ${onLocationUpdate}`, data);
       }
@@ -145,28 +182,28 @@ export function LocationShare(props: LocationShareProps) {
   // Geocode address and set manual location
   const setManualLocationMutation = useMutation({
     mutationFn: async (address: string) => {
-      const response = await fetch('/api/location/manual', {
-        method: 'PUT',
+      const response = await fetch("/api/location/manual", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify({ address }),
       });
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to set location from address');
+        throw new Error(error.error || "Failed to set location from address");
       }
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['location', userId] });
-      setManualAddress('');
+      queryClient.invalidateQueries({ queryKey: ["location", userId] });
+      setManualAddress("");
       toast({
         title: "Location set",
         description: "Your location has been set from the address.",
       });
-      
+
       if (onLocationUpdate) {
         console.log(`Triggering action: ${onLocationUpdate}`, data);
       }
@@ -183,22 +220,22 @@ export function LocationShare(props: LocationShareProps) {
   // Toggle location sharing
   const toggleSharingMutation = useMutation({
     mutationFn: async (sharing: boolean) => {
-      const response = await fetch('/api/location/sharing', {
-        method: 'PATCH',
+      const response = await fetch("/api/location/sharing", {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify({ sharing }),
       });
-      if (!response.ok) throw new Error('Failed to update sharing preference');
+      if (!response.ok) throw new Error("Failed to update sharing preference");
       return response.json();
     },
     onSuccess: (data, sharing) => {
-      queryClient.invalidateQueries({ queryKey: ['location', userId] });
+      queryClient.invalidateQueries({ queryKey: ["location", userId] });
       toast({
-        title: `Location sharing ${sharing ? 'enabled' : 'disabled'}`,
-        description: sharing 
+        title: `Location sharing ${sharing ? "enabled" : "disabled"}`,
+        description: sharing
           ? "Your location is now visible to others"
           : "Your location is now private",
       });
@@ -227,42 +264,48 @@ export function LocationShare(props: LocationShareProps) {
     try {
       // Check if geolocation is supported
       if (!navigator.geolocation) {
-        throw new Error('Geolocation is not supported by this browser');
+        throw new Error("Geolocation is not supported by this browser");
       }
 
       // Check/request permission
-      let permission: PermissionState = 'prompt';
+      let permission: PermissionState = "prompt";
       try {
-        const result = await navigator.permissions.query({ name: 'geolocation' });
+        const result = await navigator.permissions.query({
+          name: "geolocation",
+        });
         permission = result.state;
       } catch (e) {
-        console.warn('Permission API not supported, proceeding with geolocation request');
+        console.warn(
+          "Permission API not supported, proceeding with geolocation request",
+        );
       }
 
-      if (permission === 'denied') {
+      if (permission === "denied") {
         updatePermissionMutation.mutate({ denied: true });
-        throw new Error('Location permission denied. Please enable location access in your browser settings.');
+        throw new Error(
+          "Location permission denied. Please enable location access in your browser settings.",
+        );
       }
 
       // Set timeout for location request
       const timeoutId = setTimeout(() => {
-        throw new Error('Location request timed out. Please try again or enter your address manually.');
+        throw new Error(
+          "Location request timed out. Please try again or enter your address manually.",
+        );
       }, 15000); // 15 second timeout
 
       setLocationTimeout(timeoutId);
 
       // Get current position
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: true,
             timeout: 10000,
             maximumAge: 300000, // 5 minutes
-          }
-        );
-      });
+          });
+        },
+      );
 
       clearTimeout(timeoutId);
       setLocationTimeout(null);
@@ -275,24 +318,29 @@ export function LocationShare(props: LocationShareProps) {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
         accuracy: position.coords.accuracy,
-        source: 'gps',
+        source: "gps",
         sharing: true,
         timestamp: new Date().toISOString(),
       });
-
     } catch (error: any) {
       clearLocationTimeout();
-      
-      let errorMessage = 'Failed to get location';
+
+      let errorMessage = "Failed to get location";
       let permissionDenied = false;
 
-      if (error.code === 1) { // PERMISSION_DENIED
-        errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+      if (error.code === 1) {
+        // PERMISSION_DENIED
+        errorMessage =
+          "Location permission denied. Please enable location access in your browser settings.";
         permissionDenied = true;
-      } else if (error.code === 2) { // POSITION_UNAVAILABLE
-        errorMessage = 'Location unavailable. Please check your GPS or try entering your address manually.';
-      } else if (error.code === 3) { // TIMEOUT
-        errorMessage = 'Location request timed out. Please try again or enter your address manually.';
+      } else if (error.code === 2) {
+        // POSITION_UNAVAILABLE
+        errorMessage =
+          "Location unavailable. Please check your GPS or try entering your address manually.";
+      } else if (error.code === 3) {
+        // TIMEOUT
+        errorMessage =
+          "Location request timed out. Please try again or enter your address manually.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -307,7 +355,12 @@ export function LocationShare(props: LocationShareProps) {
         variant: "destructive",
       });
     }
-  }, [clearLocationTimeout, updatePermissionMutation, updateLocationMutation, toast]);
+  }, [
+    clearLocationTimeout,
+    updatePermissionMutation,
+    updateLocationMutation,
+    toast,
+  ]);
 
   // Handle manual address entry
   const handleManualLocation = useCallback(() => {
@@ -324,23 +377,26 @@ export function LocationShare(props: LocationShareProps) {
   }, [manualAddress, setManualLocationMutation, toast]);
 
   // Handle Enter key in address input
-  const handleAddressKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleManualLocation();
-    }
-  }, [handleManualLocation]);
+  const handleAddressKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleManualLocation();
+      }
+    },
+    [handleManualLocation],
+  );
 
   // Auto-request location on mount if enabled
   useEffect(() => {
-    if (autoRequest && permissionData?.data.permission === 'prompt') {
+    if (autoRequest && permissionData?.data.permission === "prompt") {
       requestLocation();
     }
   }, [autoRequest, permissionData?.data.permission, requestLocation]);
 
   // Handle real-time location updates
   useEffect(() => {
-    if (lastUpdate?.type === 'location_update') {
-      queryClient.invalidateQueries({ queryKey: ['location', userId] });
+    if (lastUpdate?.type === "location_update") {
+      queryClient.invalidateQueries({ queryKey: ["location", userId] });
     }
   }, [lastUpdate, queryClient, userId]);
 
@@ -352,8 +408,9 @@ export function LocationShare(props: LocationShareProps) {
   }, [clearLocationTimeout]);
 
   const location = locationData?.data.location;
-  const permission = permissionData?.data.permission || 'prompt';
-  const isLoading = updateLocationMutation.isPending || setManualLocationMutation.isPending;
+  const permission = permissionData?.data.permission || "prompt";
+  const isLoading =
+    updateLocationMutation.isPending || setManualLocationMutation.isPending;
 
   return (
     <Card className={className}>
@@ -366,14 +423,15 @@ export function LocationShare(props: LocationShareProps) {
           Share your location to find people nearby
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Permission Denied Alert */}
-        {permission === 'denied' && (
+        {permission === "denied" && (
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Location permission denied. You can still enter your location manually below.
+              Location permission denied. You can still enter your location
+              manually below.
             </AlertDescription>
           </Alert>
         )}
@@ -398,16 +456,22 @@ export function LocationShare(props: LocationShareProps) {
                 <MapPinOff className="h-4 w-4 text-orange-600" />
               )}
               <span className="font-medium">
-                {location.sharing ? 'Location Shared' : 'Location Set (Private)'}
+                {location.sharing
+                  ? "Location Shared"
+                  : "Location Set (Private)"}
               </span>
-              {location.source === 'manual' && (
-                <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Manual</span>
+              {location.source === "manual" && (
+                <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                  Manual
+                </span>
               )}
             </div>
-            
+
             <div className="text-sm text-muted-foreground space-y-1">
               {location.locality && location.country && (
-                <div className="font-medium">{location.locality}, {location.country}</div>
+                <div className="font-medium">
+                  {location.locality}, {location.country}
+                </div>
               )}
               <div>Latitude: {location.lat.toFixed(6)}</div>
               <div>Longitude: {location.lng.toFixed(6)}</div>
@@ -423,8 +487,8 @@ export function LocationShare(props: LocationShareProps) {
         )}
 
         {/* GPS Location Button */}
-        <Button 
-          onClick={requestLocation} 
+        <Button
+          onClick={requestLocation}
           disabled={isLoading}
           className="w-full"
           variant={location ? "outline" : "default"}
@@ -434,7 +498,9 @@ export function LocationShare(props: LocationShareProps) {
           ) : (
             <Navigation className="mr-2 h-4 w-4" />
           )}
-          {updateLocationMutation.isPending ? 'Getting Location...' : 'Use Current Location'}
+          {updateLocationMutation.isPending
+            ? "Getting Location..."
+            : "Use Current Location"}
         </Button>
 
         {/* Manual Address Entry */}
@@ -449,7 +515,7 @@ export function LocationShare(props: LocationShareProps) {
               onKeyPress={handleAddressKeyPress}
               disabled={isLoading}
             />
-            <Button 
+            <Button
               onClick={handleManualLocation}
               disabled={isLoading || !manualAddress.trim()}
               variant="outline"
@@ -457,7 +523,7 @@ export function LocationShare(props: LocationShareProps) {
               {setManualLocationMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                'Set'
+                "Set"
               )}
             </Button>
           </div>
@@ -477,7 +543,9 @@ export function LocationShare(props: LocationShareProps) {
             <Switch
               id="sharing-toggle"
               checked={location.sharing}
-              onCheckedChange={(checked) => toggleSharingMutation.mutate(checked)}
+              onCheckedChange={(checked) =>
+                toggleSharingMutation.mutate(checked)
+              }
               disabled={toggleSharingMutation.isPending}
             />
           </div>
@@ -486,8 +554,8 @@ export function LocationShare(props: LocationShareProps) {
 
       <CardFooter>
         <p className="text-xs text-muted-foreground">
-          Your location helps us show you relevant matches nearby. 
-          You can change sharing preferences anytime in Settings.
+          Your location helps us show you relevant matches nearby. You can
+          change sharing preferences anytime in Settings.
         </p>
       </CardFooter>
     </Card>

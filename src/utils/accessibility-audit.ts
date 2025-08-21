@@ -2,7 +2,7 @@
 
 export interface ContrastRatio {
   ratio: number;
-  level: 'AAA' | 'AA' | 'A' | 'Fail';
+  level: "AAA" | "AA" | "A" | "Fail";
   passes: boolean;
 }
 
@@ -20,8 +20,8 @@ export interface ColorPair {
  */
 function getLuminance(hex: string): number {
   // Remove # if present
-  const cleanHex = hex.replace('#', '');
-  
+  const cleanHex = hex.replace("#", "");
+
   // Convert to RGB
   const r = parseInt(cleanHex.substr(0, 2), 16) / 255;
   const g = parseInt(cleanHex.substr(2, 2), 16) / 255;
@@ -50,10 +50,10 @@ function getLuminance(hex: string): number {
 export function getContrastRatio(color1: string, color2: string): number {
   const lum1 = getLuminance(color1);
   const lum2 = getLuminance(color2);
-  
+
   const lighter = Math.max(lum1, lum2);
   const darker = Math.min(lum1, lum2);
-  
+
   return (lighter + 0.05) / (darker + 0.05);
 }
 
@@ -62,20 +62,23 @@ export function getContrastRatio(color1: string, color2: string): number {
  * @param ratio Contrast ratio
  * @param isLargeText Whether the text is considered large (18pt+ or 14pt+ bold)
  */
-export function evaluateContrast(ratio: number, isLargeText: boolean = false): ContrastRatio {
+export function evaluateContrast(
+  ratio: number,
+  isLargeText: boolean = false,
+): ContrastRatio {
   const minRatio = isLargeText ? 3 : 4.5; // WCAG AA requirements
   const minRatioAAA = isLargeText ? 4.5 : 7; // WCAG AAA requirements
-  
-  let level: ContrastRatio['level'] = 'Fail';
-  
+
+  let level: ContrastRatio["level"] = "Fail";
+
   if (ratio >= minRatioAAA) {
-    level = 'AAA';
+    level = "AAA";
   } else if (ratio >= minRatio) {
-    level = 'AA';
+    level = "AA";
   } else if (ratio >= 3) {
-    level = 'A';
+    level = "A";
   }
-  
+
   return {
     ratio: Math.round(ratio * 100) / 100,
     level,
@@ -88,7 +91,10 @@ export function evaluateContrast(ratio: number, isLargeText: boolean = false): C
  * @param fontSize Font size in px
  * @param fontWeight Font weight
  */
-export function isLargeText(fontSize: number, fontWeight: number = 400): boolean {
+export function isLargeText(
+  fontSize: number,
+  fontWeight: number = 400,
+): boolean {
   // 18pt = 24px, 14pt = 18.67px (approximately 19px)
   return fontSize >= 24 || (fontSize >= 19 && fontWeight >= 700);
 }
@@ -110,16 +116,17 @@ export function auditContrastCompliance(colorPairs: ColorPair[]): {
     percentage: number;
   };
 } {
-  const results = colorPairs.map(pair => {
-    const isLarge = pair.fontSize && pair.fontWeight 
-      ? isLargeText(pair.fontSize, pair.fontWeight)
-      : false;
-    
+  const results = colorPairs.map((pair) => {
+    const isLarge =
+      pair.fontSize && pair.fontWeight
+        ? isLargeText(pair.fontSize, pair.fontWeight)
+        : false;
+
     const contrast = evaluateContrast(
       getContrastRatio(pair.foreground, pair.background),
-      isLarge
+      isLarge,
     );
-    
+
     let recommendation: string | undefined;
     if (!contrast.passes) {
       if (isLarge) {
@@ -128,7 +135,7 @@ export function auditContrastCompliance(colorPairs: ColorPair[]): {
         recommendation = `Increase contrast to at least 4.5:1 for normal text. Current: ${contrast.ratio}:1`;
       }
     }
-    
+
     return {
       pair,
       contrast,
@@ -136,10 +143,10 @@ export function auditContrastCompliance(colorPairs: ColorPair[]): {
       recommendation,
     };
   });
-  
-  const passing = results.filter(r => r.contrast.passes).length;
+
+  const passing = results.filter((r) => r.contrast.passes).length;
   const total = results.length;
-  
+
   return {
     results,
     summary: {
@@ -156,11 +163,11 @@ export function auditContrastCompliance(colorPairs: ColorPair[]): {
  */
 export function extractColorsFromTokens(tokens: any): Record<string, string> {
   const colors: Record<string, string> = {};
-  
-  function extractColors(obj: any, prefix: string = '') {
+
+  function extractColors(obj: any, prefix: string = "") {
     for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === 'object' && value !== null) {
-        if (value.type === 'color' && value.value) {
+      if (typeof value === "object" && value !== null) {
+        if (value.type === "color" && value.value) {
           // Remove alpha channel if present (8-digit hex)
           const colorValue = value.value.slice(0, 7);
           colors[`${prefix}${key}`] = colorValue;
@@ -171,151 +178,153 @@ export function extractColorsFromTokens(tokens: any): Record<string, string> {
       }
     }
   }
-  
+
   if (tokens.color) {
     extractColors(tokens.color);
   }
-  
+
   return colors;
 }
 
 /**
  * Get recommended color pairs for the application
  */
-export function getApplicationColorPairs(colors: Record<string, string>): ColorPair[] {
+export function getApplicationColorPairs(
+  colors: Record<string, string>,
+): ColorPair[] {
   const pairs: ColorPair[] = [];
-  
+
   // Primary text combinations
-  if (colors['greyscale.900'] && colors['others.white']) {
+  if (colors["greyscale.900"] && colors["others.white"]) {
     pairs.push({
-      foreground: colors['greyscale.900'],
-      background: colors['others.white'],
-      purpose: 'Primary text on white background',
+      foreground: colors["greyscale.900"],
+      background: colors["others.white"],
+      purpose: "Primary text on white background",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
-  if (colors['others.white'] && colors['greyscale.900']) {
+
+  if (colors["others.white"] && colors["greyscale.900"]) {
     pairs.push({
-      foreground: colors['others.white'],
-      background: colors['greyscale.900'],
-      purpose: 'White text on dark background',
+      foreground: colors["others.white"],
+      background: colors["greyscale.900"],
+      purpose: "White text on dark background",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
+
   // Secondary text combinations
-  if (colors['greyscale.600'] && colors['others.white']) {
+  if (colors["greyscale.600"] && colors["others.white"]) {
     pairs.push({
-      foreground: colors['greyscale.600'],
-      background: colors['others.white'],
-      purpose: 'Secondary text on white background',
+      foreground: colors["greyscale.600"],
+      background: colors["others.white"],
+      purpose: "Secondary text on white background",
       fontSize: 14,
       fontWeight: 400,
     });
   }
-  
+
   // Primary button combinations
-  if (colors['others.white'] && colors['primary.700']) {
+  if (colors["others.white"] && colors["primary.700"]) {
     pairs.push({
-      foreground: colors['others.white'],
-      background: colors['primary.700'],
-      purpose: 'Primary button text',
+      foreground: colors["others.white"],
+      background: colors["primary.700"],
+      purpose: "Primary button text",
       fontSize: 16,
       fontWeight: 600,
     });
   }
-  
+
   // Error/destructive combinations
-  if (colors['others.white'] && colors['alerts & status.error']) {
+  if (colors["others.white"] && colors["alerts & status.error"]) {
     pairs.push({
-      foreground: colors['others.white'],
-      background: colors['alerts & status.error'],
-      purpose: 'Error button text',
+      foreground: colors["others.white"],
+      background: colors["alerts & status.error"],
+      purpose: "Error button text",
       fontSize: 16,
       fontWeight: 600,
     });
   }
-  
+
   // Success combinations
-  if (colors['others.white'] && colors['alerts & status.success']) {
+  if (colors["others.white"] && colors["alerts & status.success"]) {
     pairs.push({
-      foreground: colors['others.white'],
-      background: colors['alerts & status.success'],
-      purpose: 'Success button text',
+      foreground: colors["others.white"],
+      background: colors["alerts & status.success"],
+      purpose: "Success button text",
       fontSize: 16,
       fontWeight: 600,
     });
   }
-  
+
   // Warning combinations
-  if (colors['greyscale.900'] && colors['alerts & status.warning']) {
+  if (colors["greyscale.900"] && colors["alerts & status.warning"]) {
     pairs.push({
-      foreground: colors['greyscale.900'],
-      background: colors['alerts & status.warning'],
-      purpose: 'Warning text',
+      foreground: colors["greyscale.900"],
+      background: colors["alerts & status.warning"],
+      purpose: "Warning text",
       fontSize: 14,
       fontWeight: 400,
     });
   }
-  
+
   // Disabled state combinations
-  if (colors['alerts & status.light disabled'] && colors['others.white']) {
+  if (colors["alerts & status.light disabled"] && colors["others.white"]) {
     pairs.push({
-      foreground: colors['alerts & status.light disabled'],
-      background: colors['others.white'],
-      purpose: 'Disabled text on light background',
+      foreground: colors["alerts & status.light disabled"],
+      background: colors["others.white"],
+      purpose: "Disabled text on light background",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
+
   // Link colors
-  if (colors['primary.600'] && colors['others.white']) {
+  if (colors["primary.600"] && colors["others.white"]) {
     pairs.push({
-      foreground: colors['primary.600'],
-      background: colors['others.white'],
-      purpose: 'Link text',
+      foreground: colors["primary.600"],
+      background: colors["others.white"],
+      purpose: "Link text",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
+
   // Form input combinations
-  if (colors['greyscale.900'] && colors['greyscale.50']) {
+  if (colors["greyscale.900"] && colors["greyscale.50"]) {
     pairs.push({
-      foreground: colors['greyscale.900'],
-      background: colors['greyscale.50'],
-      purpose: 'Input text on light background',
+      foreground: colors["greyscale.900"],
+      background: colors["greyscale.50"],
+      purpose: "Input text on light background",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
+
   // Placeholder text
-  if (colors['greyscale.400'] && colors['others.white']) {
+  if (colors["greyscale.400"] && colors["others.white"]) {
     pairs.push({
-      foreground: colors['greyscale.400'],
-      background: colors['others.white'],
-      purpose: 'Placeholder text',
+      foreground: colors["greyscale.400"],
+      background: colors["others.white"],
+      purpose: "Placeholder text",
       fontSize: 16,
       fontWeight: 400,
     });
   }
-  
+
   // Badge/chip combinations
-  if (colors['primary.800'] && colors['primary.100']) {
+  if (colors["primary.800"] && colors["primary.100"]) {
     pairs.push({
-      foreground: colors['primary.800'],
-      background: colors['primary.100'],
-      purpose: 'Primary badge text',
+      foreground: colors["primary.800"],
+      background: colors["primary.100"],
+      purpose: "Primary badge text",
       fontSize: 12,
       fontWeight: 500,
     });
   }
-  
+
   return pairs;
 }
 
@@ -335,7 +344,7 @@ export function generateContrastReport(tokens: any): {
   const colors = extractColorsFromTokens(tokens);
   const colorPairs = getApplicationColorPairs(colors);
   const audit = auditContrastCompliance(colorPairs);
-  
+
   const recommendations: string[] = [];
   const changes: Array<{
     token: string;
@@ -343,44 +352,43 @@ export function generateContrastReport(tokens: any): {
     suggested: string;
     reason: string;
   }> = [];
-  
+
   // Analyze failing pairs and suggest improvements
-  audit.results.forEach(result => {
+  audit.results.forEach((result) => {
     if (!result.contrast.passes) {
-      recommendations.push(
-        `${result.pair.purpose}: ${result.recommendation}`
-      );
-      
+      recommendations.push(`${result.pair.purpose}: ${result.recommendation}`);
+
       // Suggest color improvements
-      if (result.pair.purpose.includes('Secondary text')) {
+      if (result.pair.purpose.includes("Secondary text")) {
         changes.push({
-          token: 'greyscale.600',
+          token: "greyscale.600",
           current: result.pair.foreground,
-          suggested: colors['greyscale.700'] || '#616161',
-          reason: 'Improve secondary text contrast',
+          suggested: colors["greyscale.700"] || "#616161",
+          reason: "Improve secondary text contrast",
         });
       }
-      
-      if (result.pair.purpose.includes('Disabled text')) {
+
+      if (result.pair.purpose.includes("Disabled text")) {
         changes.push({
-          token: 'alerts & status.light disabled',
+          token: "alerts & status.light disabled",
           current: result.pair.foreground,
-          suggested: colors['greyscale.500'] || '#9e9e9e',
-          reason: 'Improve disabled text contrast while maintaining disabled appearance',
+          suggested: colors["greyscale.500"] || "#9e9e9e",
+          reason:
+            "Improve disabled text contrast while maintaining disabled appearance",
         });
       }
     }
   });
-  
+
   // General recommendations
   if (audit.summary.percentage < 100) {
     recommendations.push(
-      'Consider using darker text colors for better accessibility',
-      'Test color combinations with accessibility tools',
-      'Ensure sufficient contrast for all interactive elements'
+      "Consider using darker text colors for better accessibility",
+      "Test color combinations with accessibility tools",
+      "Ensure sufficient contrast for all interactive elements",
     );
   }
-  
+
   return {
     audit,
     recommendations,
@@ -398,27 +406,27 @@ export function auditComponentContrast(): {
 }[] {
   return [
     {
-      component: 'Button Primary',
+      component: "Button Primary",
       issues: [],
       passes: true,
     },
     {
-      component: 'Button Secondary',
+      component: "Button Secondary",
       issues: [],
       passes: true,
     },
     {
-      component: 'Form Inputs',
+      component: "Form Inputs",
       issues: [],
       passes: true,
     },
     {
-      component: 'Navigation',
+      component: "Navigation",
       issues: [],
       passes: true,
     },
     {
-      component: 'Cards',
+      component: "Cards",
       issues: [],
       passes: true,
     },

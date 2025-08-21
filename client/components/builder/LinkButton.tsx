@@ -10,37 +10,36 @@ interface LinkButtonProps {
   text: string;
   to: string;
   external?: boolean;
-  variant?: ButtonProps['variant'];
-  size?: ButtonProps['size'];
+  variant?: ButtonProps["variant"];
+  size?: ButtonProps["size"];
   className?: string;
 }
 
 export function LinkButton(props: LinkButtonProps) {
   // Validate props at runtime
-  const validatedProps = validateComponentProps('LinkButton', props, linkButtonSchema);
-  const { 
-    text, 
-    to, 
-    external = false, 
-    variant = 'link', 
-    size = 'default',
-    className
+  const validatedProps = validateComponentProps(
+    "LinkButton",
+    props,
+    linkButtonSchema,
+  );
+  const {
+    text,
+    to,
+    external = false,
+    variant = "link",
+    size = "default",
+    className,
   } = validatedProps;
-  
+
   // Determine if link is external based on URL or explicit prop
-  const isExternal = external || to.startsWith('http');
-  
+  const isExternal = external || to.startsWith("http");
+
   if (isExternal) {
     return (
-      <Button
-        variant={variant}
-        size={size}
-        asChild
-        className={className}
-      >
-        <a 
-          href={to} 
-          target="_blank" 
+      <Button variant={variant} size={size} asChild className={className}>
+        <a
+          href={to}
+          target="_blank"
           rel="noopener noreferrer"
           aria-label={`${text} (opens in new tab)`}
         >
@@ -50,14 +49,9 @@ export function LinkButton(props: LinkButtonProps) {
       </Button>
     );
   }
-  
+
   return (
-    <Button
-      variant={variant}
-      size={size}
-      asChild
-      className={className}
-    >
+    <Button variant={variant} size={size} asChild className={className}>
       <Link to={to} aria-label={text}>
         {text}
       </Link>

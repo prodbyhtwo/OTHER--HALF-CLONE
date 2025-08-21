@@ -11,8 +11,8 @@ interface PrimaryButtonProps {
   text: string;
   actionId?: string;
   to?: string;
-  variant?: ButtonProps['variant'];
-  size?: ButtonProps['size'];
+  variant?: ButtonProps["variant"];
+  size?: ButtonProps["size"];
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
@@ -21,88 +21,96 @@ interface PrimaryButtonProps {
 
 // Action registry for Builder.io actions
 const ACTION_REGISTRY: Record<string, () => void | Promise<void>> = {
-  'open-modal': () => {
+  "open-modal": () => {
     // This would open a modal in a real implementation
-    toast.info('Modal action triggered');
+    toast.info("Modal action triggered");
   },
-  'save-settings': async () => {
+  "save-settings": async () => {
     // This would save settings in a real implementation
-    toast.info('Settings saved');
+    toast.info("Settings saved");
   },
-  'start-checkout': () => {
+  "start-checkout": () => {
     // This would start checkout flow
-    toast.info('Starting checkout...');
-    window.location.href = '/checkout';
+    toast.info("Starting checkout...");
+    window.location.href = "/checkout";
   },
-  'refresh-data': () => {
+  "refresh-data": () => {
     // This would refresh data
-    toast.info('Refreshing data...');
+    toast.info("Refreshing data...");
     window.location.reload();
   },
-  'share-profile': async () => {
+  "share-profile": async () => {
     // This would share profile
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'My Profile',
-          text: 'Check out my profile!',
+          title: "My Profile",
+          text: "Check out my profile!",
           url: window.location.href,
         });
       } catch (error) {
-        toast.error('Failed to share');
+        toast.error("Failed to share");
       }
     } else {
       // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success('Profile link copied to clipboard');
+        toast.success("Profile link copied to clipboard");
       } catch (error) {
-        toast.error('Failed to copy link');
+        toast.error("Failed to copy link");
       }
     }
   },
-  'logout': () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+  logout: () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   },
-  'delete-account': async () => {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+  "delete-account": async () => {
+    if (
+      confirm(
+        "Are you sure you want to delete your account? This action cannot be undone.",
+      )
+    ) {
       // This would delete account in a real implementation
-      toast.error('Account deletion not implemented in demo');
+      toast.error("Account deletion not implemented in demo");
     }
   },
-  'report-user': () => {
-    toast.info('Report user functionality triggered');
+  "report-user": () => {
+    toast.info("Report user functionality triggered");
   },
-  'block-user': () => {
-    toast.info('Block user functionality triggered');
-  }
+  "block-user": () => {
+    toast.info("Block user functionality triggered");
+  },
 };
 
 export function PrimaryButton(props: PrimaryButtonProps) {
   // Validate props at runtime
-  const validatedProps = validateComponentProps('PrimaryButton', props, primaryButtonSchema);
-  const { 
-    text, 
-    actionId, 
-    to, 
-    variant = 'default', 
-    size = 'default', 
-    disabled = false, 
-    loading = false, 
+  const validatedProps = validateComponentProps(
+    "PrimaryButton",
+    props,
+    primaryButtonSchema,
+  );
+  const {
+    text,
+    actionId,
+    to,
+    variant = "default",
+    size = "default",
+    disabled = false,
+    loading = false,
     fullWidth = false,
-    className
+    className,
   } = validatedProps;
-  
+
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const handleClick = async () => {
     if (disabled || loading || isProcessing) return;
-    
+
     try {
       setIsProcessing(true);
-      
+
       if (actionId) {
         // Execute registered action
         const action = ACTION_REGISTRY[actionId];
@@ -114,35 +122,32 @@ export function PrimaryButton(props: PrimaryButtonProps) {
         }
       } else if (to) {
         // Navigate to URL
-        if (to.startsWith('http')) {
+        if (to.startsWith("http")) {
           // External URL
-          window.open(to, '_blank', 'noopener,noreferrer');
+          window.open(to, "_blank", "noopener,noreferrer");
         } else {
           // Internal navigation
           navigate(to);
         }
       }
     } catch (error) {
-      console.error('Button action error:', error);
-      toast.error('Action failed. Please try again.');
+      console.error("Button action error:", error);
+      toast.error("Action failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   };
-  
+
   const isLoading = loading || isProcessing;
   const isDisabled = disabled || isLoading;
-  
+
   return (
     <Button
       variant={variant}
       size={size}
       disabled={isDisabled}
       onClick={handleClick}
-      className={cn(
-        fullWidth && "w-full",
-        className
-      )}
+      className={cn(fullWidth && "w-full", className)}
       aria-label={text}
     >
       {isLoading ? (
@@ -158,7 +163,10 @@ export function PrimaryButton(props: PrimaryButtonProps) {
 }
 
 // Function to register a new action
-export function registerAction(actionId: string, action: () => void | Promise<void>) {
+export function registerAction(
+  actionId: string,
+  action: () => void | Promise<void>,
+) {
   ACTION_REGISTRY[actionId] = action;
 }
 

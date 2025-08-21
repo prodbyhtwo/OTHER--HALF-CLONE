@@ -1,18 +1,18 @@
 // tests/api/builder-api.test.ts
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import request from 'supertest';
-import express from 'express';
-import builderApiRoutes from '../../server/routes/builder-api';
-import locationApiRoutes from '../../server/routes/location-api';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import request from "supertest";
+import express from "express";
+import builderApiRoutes from "../../server/routes/builder-api";
+import locationApiRoutes from "../../server/routes/location-api";
 
 // Mock authentication middleware
 const mockAuthToken = (req: any, res: any, next: any) => {
-  req.user = { id: 'user1', role: 'user' };
+  req.user = { id: "user1", role: "user" };
   next();
 };
 
 // Mock real-time service
-vi.mock('../../src/services/realtime', () => ({
+vi.mock("../../src/services/realtime", () => ({
   realtimeService: {
     publishSettingsUpdate: vi.fn(),
     publishProfileUpdate: vi.fn(),
@@ -21,35 +21,33 @@ vi.mock('../../src/services/realtime', () => ({
   },
 }));
 
-describe('Builder API Routes', () => {
+describe("Builder API Routes", () => {
   let app: express.Application;
 
   beforeEach(() => {
     app = express();
     app.use(express.json());
-    
+
     // Apply mock auth middleware
     app.use((req, res, next) => mockAuthToken(req, res, next));
-    
+
     // Mount routes
-    app.use('/api', builderApiRoutes);
-    app.use('/api', locationApiRoutes);
+    app.use("/api", builderApiRoutes);
+    app.use("/api", locationApiRoutes);
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('GET /api/settings/me', () => {
-    it('returns user settings', async () => {
-      const response = await request(app)
-        .get('/api/settings/me')
-        .expect(200);
+  describe("GET /api/settings/me", () => {
+    it("returns user settings", async () => {
+      const response = await request(app).get("/api/settings/me").expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: expect.objectContaining({
-          user_id: 'user1',
+          user_id: "user1",
           push_preferences: expect.any(Object),
           email_preferences: expect.any(Object),
           privacy_preferences: expect.any(Object),
@@ -58,10 +56,8 @@ describe('Builder API Routes', () => {
       });
     });
 
-    it('creates default settings if none exist', async () => {
-      const response = await request(app)
-        .get('/api/settings/me')
-        .expect(200);
+    it("creates default settings if none exist", async () => {
+      const response = await request(app).get("/api/settings/me").expect(200);
 
       expect(response.body.data.push_preferences).toMatchObject({
         marketing: true,
@@ -74,8 +70,8 @@ describe('Builder API Routes', () => {
     });
   });
 
-  describe('PUT /api/settings/me', () => {
-    it('updates user settings', async () => {
+  describe("PUT /api/settings/me", () => {
+    it("updates user settings", async () => {
       const settingsUpdate = {
         push_preferences: {
           marketing: false,
@@ -88,7 +84,7 @@ describe('Builder API Routes', () => {
       };
 
       const response = await request(app)
-        .put('/api/settings/me')
+        .put("/api/settings/me")
         .send(settingsUpdate)
         .expect(200);
 
@@ -104,11 +100,11 @@ describe('Builder API Routes', () => {
             weekly_digest: true,
           }),
         }),
-        message: 'Settings updated successfully',
+        message: "Settings updated successfully",
       });
     });
 
-    it('validates age range consistency', async () => {
+    it("validates age range consistency", async () => {
       const invalidSettings = {
         discovery_preferences: {
           min_age: 30,
@@ -117,17 +113,17 @@ describe('Builder API Routes', () => {
       };
 
       const response = await request(app)
-        .put('/api/settings/me')
+        .put("/api/settings/me")
         .send(invalidSettings)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Minimum age cannot be greater than maximum age',
+        error: "Minimum age cannot be greater than maximum age",
       });
     });
 
-    it('prevents disabling security email notifications', async () => {
+    it("prevents disabling security email notifications", async () => {
       const invalidSettings = {
         email_preferences: {
           security: false,
@@ -135,17 +131,18 @@ describe('Builder API Routes', () => {
       };
 
       const response = await request(app)
-        .put('/api/settings/me')
+        .put("/api/settings/me")
         .send(invalidSettings)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Security email notifications are required and cannot be disabled',
+        error:
+          "Security email notifications are required and cannot be disabled",
       });
     });
 
-    it('validates settings data with Zod', async () => {
+    it("validates settings data with Zod", async () => {
       const invalidSettings = {
         push_preferences: {
           invalid_field: true,
@@ -153,95 +150,95 @@ describe('Builder API Routes', () => {
       };
 
       const response = await request(app)
-        .put('/api/settings/me')
+        .put("/api/settings/me")
         .send(invalidSettings)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Invalid settings data',
+        error: "Invalid settings data",
         details: expect.any(Array),
       });
     });
   });
 
-  describe('PATCH /api/users/:id', () => {
-    it('updates user profile', async () => {
+  describe("PATCH /api/users/:id", () => {
+    it("updates user profile", async () => {
       const profileUpdate = {
-        full_name: 'Updated Name',
+        full_name: "Updated Name",
         age: 26,
-        bio: 'Updated bio',
-        interests: ['reading', 'cooking'],
+        bio: "Updated bio",
+        interests: ["reading", "cooking"],
       };
 
       const response = await request(app)
-        .patch('/api/users/user1')
+        .patch("/api/users/user1")
         .send(profileUpdate)
         .expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: expect.objectContaining({
-          full_name: 'Updated Name',
+          full_name: "Updated Name",
           age: 26,
-          bio: 'Updated bio',
-          interests: ['reading', 'cooking'],
+          bio: "Updated bio",
+          interests: ["reading", "cooking"],
         }),
-        message: 'Profile updated successfully',
+        message: "Profile updated successfully",
       });
     });
 
-    it('prevents users from updating other profiles', async () => {
+    it("prevents users from updating other profiles", async () => {
       const profileUpdate = {
-        full_name: 'Hacker Name',
+        full_name: "Hacker Name",
       };
 
       const response = await request(app)
-        .patch('/api/users/user2')
+        .patch("/api/users/user2")
         .send(profileUpdate)
         .expect(403);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Forbidden: Can only update your own profile',
+        error: "Forbidden: Can only update your own profile",
       });
     });
 
-    it('validates profile data', async () => {
+    it("validates profile data", async () => {
       const invalidProfile = {
         age: 17, // Too young
-        bio: 'x'.repeat(1001), // Too long
+        bio: "x".repeat(1001), // Too long
       };
 
       const response = await request(app)
-        .patch('/api/users/user1')
+        .patch("/api/users/user1")
         .send(invalidProfile)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Invalid profile data',
+        error: "Invalid profile data",
         details: expect.any(Array),
       });
     });
 
-    it('handles location updates with geocoding', async () => {
+    it("handles location updates with geocoding", async () => {
       const profileUpdate = {
-        full_name: 'Test User',
+        full_name: "Test User",
         location: {
           lat: 40.7128,
-          lng: -74.0060,
+          lng: -74.006,
         },
       };
 
       const response = await request(app)
-        .patch('/api/users/user1')
+        .patch("/api/users/user1")
         .send(profileUpdate)
         .expect(200);
 
       expect(response.body.data.location).toMatchObject({
         lat: 40.7128,
-        lng: -74.0060,
+        lng: -74.006,
         locality: expect.any(String),
         country: expect.any(String),
         geohash: expect.any(String),
@@ -249,119 +246,115 @@ describe('Builder API Routes', () => {
     });
   });
 
-  describe('POST /api/blocks', () => {
-    it('blocks a user', async () => {
+  describe("POST /api/blocks", () => {
+    it("blocks a user", async () => {
       const blockRequest = {
-        userId: 'user2',
-        reason: 'Inappropriate behavior',
+        userId: "user2",
+        reason: "Inappropriate behavior",
       };
 
       const response = await request(app)
-        .post('/api/blocks')
+        .post("/api/blocks")
         .send(blockRequest)
         .expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: {
-          blockedUserId: 'user2',
+          blockedUserId: "user2",
           blockedAt: expect.any(String),
         },
-        message: 'User blocked successfully',
+        message: "User blocked successfully",
       });
     });
 
-    it('prevents self-blocking', async () => {
+    it("prevents self-blocking", async () => {
       const blockRequest = {
-        userId: 'user1', // Same as current user
+        userId: "user1", // Same as current user
       };
 
       const response = await request(app)
-        .post('/api/blocks')
+        .post("/api/blocks")
         .send(blockRequest)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Cannot block yourself',
+        error: "Cannot block yourself",
       });
     });
 
-    it('validates block request data', async () => {
+    it("validates block request data", async () => {
       const invalidBlock = {}; // Missing userId
 
       const response = await request(app)
-        .post('/api/blocks')
+        .post("/api/blocks")
         .send(invalidBlock)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'userId is required',
+        error: "userId is required",
       });
     });
 
-    it('handles blocking non-existent users', async () => {
+    it("handles blocking non-existent users", async () => {
       const blockRequest = {
-        userId: 'nonexistent',
+        userId: "nonexistent",
       };
 
       const response = await request(app)
-        .post('/api/blocks')
+        .post("/api/blocks")
         .send(blockRequest)
         .expect(404);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'User not found',
+        error: "User not found",
       });
     });
   });
 
-  describe('DELETE /api/blocks/:blockedId', () => {
-    it('unblocks a user', async () => {
+  describe("DELETE /api/blocks/:blockedId", () => {
+    it("unblocks a user", async () => {
       // First block the user
-      await request(app)
-        .post('/api/blocks')
-        .send({ userId: 'user2' });
+      await request(app).post("/api/blocks").send({ userId: "user2" });
 
       // Then unblock
       const response = await request(app)
-        .delete('/api/blocks/user2')
+        .delete("/api/blocks/user2")
         .expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: {
-          unblockedUserId: 'user2',
+          unblockedUserId: "user2",
           unblockedAt: expect.any(String),
         },
-        message: 'User unblocked successfully',
+        message: "User unblocked successfully",
       });
     });
 
-    it('handles unblocking non-blocked users', async () => {
+    it("handles unblocking non-blocked users", async () => {
       const response = await request(app)
-        .delete('/api/blocks/user2')
+        .delete("/api/blocks/user2")
         .expect(404);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'User was not blocked',
+        error: "User was not blocked",
       });
     });
   });
 
-  describe('GET /api/users/:id', () => {
-    it('returns public user profile', async () => {
-      const response = await request(app)
-        .get('/api/users/user1')
-        .expect(200);
+  describe("GET /api/users/:id", () => {
+    it("returns public user profile", async () => {
+      const response = await request(app).get("/api/users/user1").expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: expect.objectContaining({
-          id: 'user1',
+          id: "user1",
           full_name: expect.any(String),
           age: expect.any(Number),
           // Should not include sensitive fields
@@ -372,36 +365,34 @@ describe('Builder API Routes', () => {
       expect(response.body.data.email).toBeUndefined();
     });
 
-    it('handles non-existent users', async () => {
+    it("handles non-existent users", async () => {
       const response = await request(app)
-        .get('/api/users/nonexistent')
+        .get("/api/users/nonexistent")
         .expect(404);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'User not found',
+        error: "User not found",
       });
     });
 
-    it('hides banned users', async () => {
+    it("hides banned users", async () => {
       // Mock a banned user by modifying the mock data
       // In a real test, you'd set up test data properly
       const response = await request(app)
-        .get('/api/users/banned_user')
+        .get("/api/users/banned_user")
         .expect(404);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'User not found',
+        error: "User not found",
       });
     });
   });
 
-  describe('GET /api/blocks', () => {
-    it('returns blocked users list', async () => {
-      const response = await request(app)
-        .get('/api/blocks')
-        .expect(200);
+  describe("GET /api/blocks", () => {
+    it("returns blocked users list", async () => {
+      const response = await request(app).get("/api/blocks").expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
@@ -412,10 +403,8 @@ describe('Builder API Routes', () => {
       });
     });
 
-    it('returns empty list for new users', async () => {
-      const response = await request(app)
-        .get('/api/blocks')
-        .expect(200);
+    it("returns empty list for new users", async () => {
+      const response = await request(app).get("/api/blocks").expect(200);
 
       expect(response.body.data.blockedUserIds).toEqual([]);
       expect(response.body.data.total).toBe(0);
@@ -423,70 +412,70 @@ describe('Builder API Routes', () => {
   });
 });
 
-describe('Location API Routes', () => {
+describe("Location API Routes", () => {
   let app: express.Application;
 
   beforeEach(() => {
     app = express();
     app.use(express.json());
     app.use((req, res, next) => mockAuthToken(req, res, next));
-    app.use('/api', locationApiRoutes);
+    app.use("/api", locationApiRoutes);
   });
 
-  describe('POST /api/location/permission', () => {
-    it('records location permission grant', async () => {
+  describe("POST /api/location/permission", () => {
+    it("records location permission grant", async () => {
       const permissionData = {
         granted: true,
       };
 
       const response = await request(app)
-        .post('/api/location/permission')
+        .post("/api/location/permission")
         .send(permissionData)
         .expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: {
-          permission: 'granted',
+          permission: "granted",
           timestamp: expect.any(String),
         },
-        message: 'Location permission granted',
+        message: "Location permission granted",
       });
     });
 
-    it('records location permission denial', async () => {
+    it("records location permission denial", async () => {
       const permissionData = {
         denied: true,
-        error: 'User denied location access',
+        error: "User denied location access",
       };
 
       const response = await request(app)
-        .post('/api/location/permission')
+        .post("/api/location/permission")
         .send(permissionData)
         .expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: {
-          permission: 'denied',
+          permission: "denied",
         },
-        message: 'Location permission denied',
+        message: "Location permission denied",
       });
     });
   });
 
-  describe('PUT /api/location', () => {
-    it('updates GPS location', async () => {
+  describe("PUT /api/location", () => {
+    it("updates GPS location", async () => {
       const locationData = {
         lat: 40.7128,
-        lng: -74.0060,
+        lng: -74.006,
         accuracy: 10,
-        source: 'gps',
+        source: "gps",
         sharing: true,
       };
 
       const response = await request(app)
-        .put('/api/location')
+        .put("/api/location")
         .send(locationData)
         .expect(200);
 
@@ -495,69 +484,69 @@ describe('Location API Routes', () => {
         data: {
           location: expect.objectContaining({
             lat: 40.7128,
-            lng: -74.0060,
+            lng: -74.006,
             accuracy: 10,
             locality: expect.any(String),
             country: expect.any(String),
             sharing: true,
           }),
         },
-        message: 'Location updated successfully',
+        message: "Location updated successfully",
       });
     });
 
-    it('validates location coordinates', async () => {
+    it("validates location coordinates", async () => {
       const invalidLocation = {
         lat: 200, // Invalid latitude
-        lng: -74.0060,
-        source: 'gps',
+        lng: -74.006,
+        source: "gps",
       };
 
       const response = await request(app)
-        .put('/api/location')
+        .put("/api/location")
         .send(invalidLocation)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Invalid location data',
+        error: "Invalid location data",
       });
     });
 
-    it('checks location permissions', async () => {
+    it("checks location permissions", async () => {
       // First set permission to denied
       await request(app)
-        .post('/api/location/permission')
+        .post("/api/location/permission")
         .send({ denied: true });
 
       // Then try to update location
       const locationData = {
         lat: 40.7128,
-        lng: -74.0060,
-        source: 'gps',
+        lng: -74.006,
+        source: "gps",
       };
 
       const response = await request(app)
-        .put('/api/location')
+        .put("/api/location")
         .send(locationData)
         .expect(403);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Location permission denied',
-        code: 'PERMISSION_DENIED',
+        error: "Location permission denied",
+        code: "PERMISSION_DENIED",
       });
     });
   });
 
-  describe('PUT /api/location/manual', () => {
-    it('sets location from address', async () => {
+  describe("PUT /api/location/manual", () => {
+    it("sets location from address", async () => {
       const addressData = {
-        address: 'New York, NY',
+        address: "New York, NY",
       };
 
       const response = await request(app)
-        .put('/api/location/manual')
+        .put("/api/location/manual")
         .send(addressData)
         .expect(200);
 
@@ -567,40 +556,40 @@ describe('Location API Routes', () => {
           location: expect.objectContaining({
             lat: expect.any(Number),
             lng: expect.any(Number),
-            source: 'manual',
+            source: "manual",
             sharing: true,
           }),
         },
-        message: 'Location set manually',
+        message: "Location set manually",
       });
     });
 
-    it('handles invalid addresses', async () => {
+    it("handles invalid addresses", async () => {
       const addressData = {
-        address: 'Invalid Address 123456',
+        address: "Invalid Address 123456",
       };
 
       const response = await request(app)
-        .put('/api/location/manual')
+        .put("/api/location/manual")
         .send(addressData)
         .expect(404);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Address not found',
-        code: 'GEOCODE_FAILED',
+        error: "Address not found",
+        code: "GEOCODE_FAILED",
       });
     });
   });
 
-  describe('PATCH /api/location/sharing', () => {
-    it('toggles location sharing', async () => {
+  describe("PATCH /api/location/sharing", () => {
+    it("toggles location sharing", async () => {
       const sharingData = {
         sharing: false,
       };
 
       const response = await request(app)
-        .patch('/api/location/sharing')
+        .patch("/api/location/sharing")
         .send(sharingData)
         .expect(200);
 
@@ -610,65 +599,59 @@ describe('Location API Routes', () => {
           sharing: false,
           updated_at: expect.any(String),
         },
-        message: 'Location sharing disabled',
+        message: "Location sharing disabled",
       });
     });
 
-    it('validates sharing boolean', async () => {
+    it("validates sharing boolean", async () => {
       const invalidData = {
-        sharing: 'invalid',
+        sharing: "invalid",
       };
 
       const response = await request(app)
-        .patch('/api/location/sharing')
+        .patch("/api/location/sharing")
         .send(invalidData)
         .expect(400);
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'sharing must be a boolean value',
+        error: "sharing must be a boolean value",
       });
     });
   });
 
-  describe('GET /api/location', () => {
-    it('returns current location', async () => {
+  describe("GET /api/location", () => {
+    it("returns current location", async () => {
       // First set a location
-      await request(app)
-        .put('/api/location')
-        .send({
-          lat: 40.7128,
-          lng: -74.0060,
-          source: 'gps',
-          sharing: true,
-        });
+      await request(app).put("/api/location").send({
+        lat: 40.7128,
+        lng: -74.006,
+        source: "gps",
+        sharing: true,
+      });
 
-      const response = await request(app)
-        .get('/api/location')
-        .expect(200);
+      const response = await request(app).get("/api/location").expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: {
           location: expect.objectContaining({
             lat: 40.7128,
-            lng: -74.0060,
+            lng: -74.006,
             sharing: true,
-            source: 'gps',
+            source: "gps",
           }),
         },
       });
     });
 
-    it('returns null for users without location', async () => {
-      const response = await request(app)
-        .get('/api/location')
-        .expect(200);
+    it("returns null for users without location", async () => {
+      const response = await request(app).get("/api/location").expect(200);
 
       expect(response.body).toMatchObject({
         success: true,
         data: { location: null },
-        message: 'No location data found',
+        message: "No location data found",
       });
     });
   });

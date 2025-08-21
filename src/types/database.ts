@@ -4,56 +4,96 @@
  */
 
 // Union types for enums
-export type UserRole = 'user' | 'support' | 'editor' | 'admin';
-export type VerificationStatus = 'pending' | 'verified' | 'rejected';
-export type SubscriptionTier = 'free' | 'plus' | 'pro' | 'premium';
-export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'incomplete' | 'trialing';
-export type PaymentProvider = 'stripe' | 'apple' | 'google' | 'admin_comp';
-export type BillingCycle = 'monthly' | 'yearly';
+export type UserRole = "user" | "support" | "editor" | "admin";
+export type VerificationStatus = "pending" | "verified" | "rejected";
+export type SubscriptionTier = "free" | "plus" | "pro" | "premium";
+export type SubscriptionStatus =
+  | "active"
+  | "cancelled"
+  | "past_due"
+  | "incomplete"
+  | "trialing";
+export type PaymentProvider = "stripe" | "apple" | "google" | "admin_comp";
+export type BillingCycle = "monthly" | "yearly";
 
 // New types from schemas
-export type MessageType = 'text' | 'image' | 'voice' | 'video' | 'location' | 'gif' | 'sticker';
-export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
-export type MatchType = 'like' | 'super_like';
-export type MatchStatus = 'active' | 'unmatched' | 'blocked' | 'expired';
-export type ChurchDenomination = 'catholic' | 'protestant' | 'orthodox' | 'baptist' | 'methodist' | 
-  'presbyterian' | 'pentecostal' | 'lutheran' | 'anglican' | 'evangelical' | 'non_denominational' | 'other';
-export type ChurchVerificationStatus = 'pending' | 'verified' | 'rejected';
-export type ProfileVisibility = 'public' | 'matches_only' | 'private';
-export type AppTheme = 'light' | 'dark' | 'system' | 'faith';
+export type MessageType =
+  | "text"
+  | "image"
+  | "voice"
+  | "video"
+  | "location"
+  | "gif"
+  | "sticker";
+export type MessageStatus =
+  | "sending"
+  | "sent"
+  | "delivered"
+  | "read"
+  | "failed";
+export type MatchType = "like" | "super_like";
+export type MatchStatus = "active" | "unmatched" | "blocked" | "expired";
+export type ChurchDenomination =
+  | "catholic"
+  | "protestant"
+  | "orthodox"
+  | "baptist"
+  | "methodist"
+  | "presbyterian"
+  | "pentecostal"
+  | "lutheran"
+  | "anglican"
+  | "evangelical"
+  | "non_denominational"
+  | "other";
+export type ChurchVerificationStatus = "pending" | "verified" | "rejected";
+export type ProfileVisibility = "public" | "matches_only" | "private";
+export type AppTheme = "light" | "dark" | "system" | "faith";
 
 // Admin action types
-export type AdminActionType = 
-  | 'user_ban'
-  | 'user_unban'
-  | 'user_approve'
-  | 'user_reject'
-  | 'user_promote'
-  | 'user_demote'
-  | 'subscription_change'
-  | 'subscription_comp'
-  | 'content_create'
-  | 'content_update'
-  | 'content_delete'
-  | 'notification_send'
-  | 'bulk_approve_all'
-  | 'bulk_approve_verified'
-  | 'church_create'
-  | 'church_update'
-  | 'church_delete'
-  | 'learning_content_create'
-  | 'learning_content_update'
-  | 'learning_content_delete'
-  | 'system_setting_change';
+export type AdminActionType =
+  | "user_ban"
+  | "user_unban"
+  | "user_approve"
+  | "user_reject"
+  | "user_promote"
+  | "user_demote"
+  | "subscription_change"
+  | "subscription_comp"
+  | "content_create"
+  | "content_update"
+  | "content_delete"
+  | "notification_send"
+  | "bulk_approve_all"
+  | "bulk_approve_verified"
+  | "church_create"
+  | "church_update"
+  | "church_delete"
+  | "learning_content_create"
+  | "learning_content_update"
+  | "learning_content_delete"
+  | "system_setting_change";
 
-export type TargetType = 'user' | 'subscription' | 'church' | 'learning_content' | 'notification' | 'system';
+export type TargetType =
+  | "user"
+  | "subscription"
+  | "church"
+  | "learning_content"
+  | "notification"
+  | "system";
 
 // Notification types
-export type NotificationChannel = 'push' | 'email' | 'popup' | 'sms';
-export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed' | 'paused';
-export type ScheduleType = 'immediate' | 'scheduled' | 'recurring';
-export type RecurringPattern = 'daily' | 'weekly' | 'monthly';
-export type ActionType = 'open_app' | 'open_url' | 'deep_link';
+export type NotificationChannel = "push" | "email" | "popup" | "sms";
+export type CampaignStatus =
+  | "draft"
+  | "scheduled"
+  | "sending"
+  | "sent"
+  | "failed"
+  | "paused";
+export type ScheduleType = "immediate" | "scheduled" | "recurring";
+export type RecurringPattern = "daily" | "weekly" | "monthly";
+export type ActionType = "open_app" | "open_url" | "deep_link";
 
 // Core interfaces
 export interface User {
@@ -70,7 +110,12 @@ export interface User {
     country?: string;
   };
   denomination?: ChurchDenomination;
-  church_attendance?: 'weekly' | 'monthly' | 'occasionally' | 'holidays_only' | 'never';
+  church_attendance?:
+    | "weekly"
+    | "monthly"
+    | "occasionally"
+    | "holidays_only"
+    | "never";
   love_language?: string;
   personality_type?: string;
   looking_for?: string;
@@ -91,7 +136,7 @@ export interface User {
   is_banned: boolean;
   verification_status: VerificationStatus;
   invited_by_invite_code?: string;
-  signup_method?: 'email' | 'google' | 'apple' | 'facebook';
+  signup_method?: "email" | "google" | "apple" | "facebook";
   subscription_tier: SubscriptionTier;
   entitlements?: string[];
   badges?: string[];
@@ -136,7 +181,13 @@ export interface UserSettings {
     max_distance_km: number;
     preferred_denominations?: ChurchDenomination[];
     required_verification: boolean;
-    preferred_church_attendance?: ('weekly' | 'monthly' | 'occasionally' | 'holidays_only' | 'never')[];
+    preferred_church_attendance?: (
+      | "weekly"
+      | "monthly"
+      | "occasionally"
+      | "holidays_only"
+      | "never"
+    )[];
   };
   blocked_user_ids: string[];
   theme: AppTheme;
@@ -155,7 +206,7 @@ export interface Message {
   attachments?: Array<{
     id: string;
     url: string;
-    type: 'image' | 'video' | 'audio' | 'document';
+    type: "image" | "video" | "audio" | "document";
     filename?: string;
     size?: number;
     mime_type?: string;
@@ -192,7 +243,7 @@ export interface Match {
   matched_at: string;
   unmatched_at?: string | null;
   unmatched_by?: string | null;
-  unmatch_reason?: 'no_interest' | 'inappropriate' | 'spam' | 'other' | null;
+  unmatch_reason?: "no_interest" | "inappropriate" | "spam" | "other" | null;
   last_message_at?: string | null;
   expires_at?: string | null;
   metadata?: {
@@ -225,15 +276,36 @@ export interface Church {
     geohash?: string;
   };
   service_times: Array<{
-    day: 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+    day:
+      | "sunday"
+      | "monday"
+      | "tuesday"
+      | "wednesday"
+      | "thursday"
+      | "friday"
+      | "saturday";
     time: string;
-    service_type: 'worship' | 'prayer' | 'bible_study' | 'youth' | 'children' | 'special';
+    service_type:
+      | "worship"
+      | "prayer"
+      | "bible_study"
+      | "youth"
+      | "children"
+      | "special";
     description?: string;
   }>;
   pastor_name?: string | null;
-  membership_size?: 'small' | 'medium' | 'large' | 'megachurch' | null;
+  membership_size?: "small" | "medium" | "large" | "megachurch" | null;
   languages: string[];
-  facilities: Array<'parking' | 'nursery' | 'wheelchair_accessible' | 'youth_center' | 'gym' | 'kitchen' | 'bookstore'>;
+  facilities: Array<
+    | "parking"
+    | "nursery"
+    | "wheelchair_accessible"
+    | "youth_center"
+    | "gym"
+    | "kitchen"
+    | "bookstore"
+  >;
   photo_urls: string[];
   verification_status: ChurchVerificationStatus;
   verified_at?: string | null;
@@ -350,8 +422,8 @@ export interface LearningContent {
   id: string;
   title: string;
   description: string;
-  category: 'relationship' | 'faith' | 'personal_growth' | 'communication';
-  content_type: 'article' | 'video' | 'podcast' | 'quiz';
+  category: "relationship" | "faith" | "personal_growth" | "communication";
+  content_type: "article" | "video" | "podcast" | "quiz";
   content_url?: string;
   content_text?: string;
   is_featured: boolean;
@@ -395,7 +467,12 @@ export interface UpdateUserProfileRequest {
   age?: number;
   bio?: string;
   denomination?: ChurchDenomination;
-  church_attendance?: 'weekly' | 'monthly' | 'occasionally' | 'holidays_only' | 'never';
+  church_attendance?:
+    | "weekly"
+    | "monthly"
+    | "occasionally"
+    | "holidays_only"
+    | "never";
   interests?: string[];
   looking_for?: string;
   location?: {
@@ -405,10 +482,10 @@ export interface UpdateUserProfileRequest {
 }
 
 export interface UpdateUserSettingsRequest {
-  push_preferences?: Partial<UserSettings['push_preferences']>;
-  email_preferences?: Partial<UserSettings['email_preferences']>;
-  privacy_preferences?: Partial<UserSettings['privacy_preferences']>;
-  discovery_preferences?: Partial<UserSettings['discovery_preferences']>;
+  push_preferences?: Partial<UserSettings["push_preferences"]>;
+  email_preferences?: Partial<UserSettings["email_preferences"]>;
+  privacy_preferences?: Partial<UserSettings["privacy_preferences"]>;
+  discovery_preferences?: Partial<UserSettings["discovery_preferences"]>;
   theme?: AppTheme;
   language?: string;
 }
@@ -426,15 +503,36 @@ export interface UpdateLocationRequest {
 
 // Entitlements mapping
 export const ENTITLEMENTS_BY_TIER: Record<SubscriptionTier, string[]> = {
-  free: ['basic_matches', 'basic_messaging'],
-  plus: ['basic_matches', 'basic_messaging', 'enhanced_filters', 'see_who_liked'],
-  pro: ['basic_matches', 'basic_messaging', 'enhanced_filters', 'see_who_liked', 'unlimited_likes', 'read_receipts'],
-  premium: ['basic_matches', 'basic_messaging', 'enhanced_filters', 'see_who_liked', 'unlimited_likes', 'read_receipts', 'priority_support', 'exclusive_events']
+  free: ["basic_matches", "basic_messaging"],
+  plus: [
+    "basic_matches",
+    "basic_messaging",
+    "enhanced_filters",
+    "see_who_liked",
+  ],
+  pro: [
+    "basic_matches",
+    "basic_messaging",
+    "enhanced_filters",
+    "see_who_liked",
+    "unlimited_likes",
+    "read_receipts",
+  ],
+  premium: [
+    "basic_matches",
+    "basic_messaging",
+    "enhanced_filters",
+    "see_who_liked",
+    "unlimited_likes",
+    "read_receipts",
+    "priority_support",
+    "exclusive_events",
+  ],
 };
 
 export const PERMISSION_LEVELS: Record<UserRole, number> = {
   user: 0,
   support: 1,
   editor: 2,
-  admin: 3
+  admin: 3,
 };
