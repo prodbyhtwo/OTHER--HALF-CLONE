@@ -389,10 +389,13 @@ router.patch("/users/:id", authenticateToken, async (req: Request, res: Response
       fields: Object.keys(validatedData),
       updatedBy: currentUser.id,
     }, req);
-    
+
+    // Publish real-time update
+    await realtimeService.publishProfileUpdate(id, updatedUser);
+
     // Remove sensitive fields for response
     const { ...safeUser } = updatedUser;
-    
+
     res.json({
       success: true,
       data: safeUser,
