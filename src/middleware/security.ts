@@ -2,7 +2,7 @@
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import slowDown from "express-slow-down";
-import { env } from "@/env/server";
+import { env } from "../env/server";
 import type { Application, Request, Response, NextFunction } from "express";
 
 // Rate limiting configuration

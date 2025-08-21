@@ -1,6 +1,6 @@
 // client/components/SafeModeIndicator.tsx
 import { useState } from "react";
-import { envClient } from "@/env/client";
+import { envClient } from "../../src/env/client";
 import { AlertTriangle, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";

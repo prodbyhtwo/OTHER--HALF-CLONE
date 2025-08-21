@@ -8,7 +8,7 @@ import type {
   Subscription, 
   PaymentsConfig 
 } from "./types";
-import { env } from "@/env/server";
+import { env } from "../env/server";
 
 // Real Stripe implementation
 export class RealPayments implements Payments {

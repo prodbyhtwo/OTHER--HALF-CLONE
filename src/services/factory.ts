@@ -1,5 +1,5 @@
 // src/services/factory.ts
-import { env } from "@/env/server";
+import { env } from "../env/server";
 import type { 
   Mailer, 
   Payments, 
