@@ -382,7 +382,7 @@
       "400": {
         "description": "",
         "type": "color",
-        "value": "#bdbdbdff",
+        "value": "#6b7280ff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
