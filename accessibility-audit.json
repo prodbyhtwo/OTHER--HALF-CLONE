@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-08-21T19:31:39.111Z",
-  "overallScore": 94,
-  "wcagCompliant": false,
+  "timestamp": "2025-08-21T19:32:02.566Z",
+  "overallScore": 100,
+  "wcagCompliant": true,
   "contrast": {
     "audit": {
       "results": [
@@ -83,18 +83,17 @@
         {
           "pair": {
             "foreground": "#ffffff",
-            "background": "#059669",
+            "background": "#047857",
             "purpose": "Success button text",
             "fontSize": 16,
             "fontWeight": 600
           },
           "contrast": {
-            "ratio": 3.77,
-            "level": "A",
-            "passes": false
+            "ratio": 5.48,
+            "level": "AA",
+            "passes": true
           },
-          "isLarge": false,
-          "recommendation": "Increase contrast to at least 4.5:1 for normal text. Current: 3.77:1"
+          "isLarge": false
         },
         {
           "pair": {
@@ -189,17 +188,12 @@
       ],
       "summary": {
         "total": 12,
-        "passing": 11,
-        "failing": 1,
-        "percentage": 92
+        "passing": 12,
+        "failing": 0,
+        "percentage": 100
       }
     },
-    "recommendations": [
-      "Success button text: Increase contrast to at least 4.5:1 for normal text. Current: 3.77:1",
-      "Consider using darker text colors for better accessibility",
-      "Test color combinations with accessibility tools",
-      "Ensure sufficient contrast for all interactive elements"
-    ],
+    "recommendations": [],
     "changes": []
   },
   "components": [
@@ -231,8 +225,8 @@
   ],
   "summary": {
     "totalChecks": 17,
-    "passingChecks": 16,
-    "failingChecks": 1,
-    "percentage": 94
+    "passingChecks": 17,
+    "failingChecks": 0,
+    "percentage": 100
   }
 }
