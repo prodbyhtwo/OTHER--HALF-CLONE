@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import demoSafeModeRoutes from "./routes/demo-safe-mode";
 import stripeRoutes from "./routes/stripe";
 import adminRoutes from "./routes/admin";
 import auditRoutes from "./routes/audit";
@@ -59,6 +60,9 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // SAFE_MODE demo routes
+  app.use("/api/demo", demoSafeModeRoutes);
 
   // Auth routes
   app.use("/api/auth", authRoutes);
