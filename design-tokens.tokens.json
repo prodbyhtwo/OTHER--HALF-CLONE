@@ -248,7 +248,7 @@
       "success": {
         "description": "",
         "type": "color",
-        "value": "#059669ff",
+        "value": "#047857ff",
         "blendMode": "normal",
         "extensions": {
           "org.lukasoppermann.figmaDesignTokens": {
