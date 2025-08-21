@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import demoSafeModeRoutes from "./routes/demo-safe-mode";
 import userProfileRoutes from "./routes/user-profile";
 import userSettingsRoutes from "./routes/user-settings";
+import builderApiRoutes from "./routes/builder-api";
 import stripeRoutes from "./routes/stripe";
 import adminRoutes from "./routes/admin";
 import auditRoutes from "./routes/audit";
