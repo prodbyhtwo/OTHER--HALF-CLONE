@@ -88,6 +88,9 @@ export function createServer() {
   // Builder-specific API routes
   app.use("/api", builderApiRoutes);
 
+  // Location API routes
+  app.use("/api", locationApiRoutes);
+
   // Matches routes
   app.use("/api/matches", matchesRoutes);
   app.use("/api/discovery", matchesRoutes);
