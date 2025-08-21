@@ -1,0 +1,12 @@
+Message-ID: <mock-1755802429869-ugxnbf905@localhost>
+Date: Thu, 21 Aug 2025 18:53:49 GMT
+From: Development App <dev@localhost>
+To: test@example.com
+Subject: Test
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<h1>Hello SAFE_MODE!</h1>
+
+
