@@ -529,7 +529,10 @@ router.delete("/blocks/:blockedId", authenticateToken, async (req: Request, res:
       blockerId: currentUser.id,
       unblockedId: blockedId,
     }, req);
-    
+
+    // Publish real-time update
+    await realtimeService.publishBlockUpdate(currentUser.id, blockedId, 'unblocked');
+
     res.json({
       success: true,
       data: {
