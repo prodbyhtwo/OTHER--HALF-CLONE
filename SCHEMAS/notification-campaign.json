@@ -1,0 +1,220 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NotificationCampaign",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "channel",
+    "audience_query",
+    "payload",
+    "status",
+    "created_by",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique campaign identifier"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Campaign name for internal reference"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["push", "email", "popup", "sms"],
+      "description": "Notification channel"
+    },
+    "audience_query": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "object",
+          "properties": {
+            "subscription_tiers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["free", "plus", "pro", "premium"]
+              }
+            },
+            "verification_status": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["pending", "approved", "rejected"]
+              }
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "age_min": {
+              "type": "integer"
+            },
+            "age_max": {
+              "type": "integer"
+            },
+            "denominations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "last_active_within_days": {
+              "type": "integer"
+            }
+          }
+        },
+        "estimated_reach": {
+          "type": "integer",
+          "description": "Estimated number of users to receive notification"
+        }
+      },
+      "description": "Query to select target audience"
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["immediate", "scheduled", "recurring"],
+          "default": "immediate"
+        },
+        "send_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Scheduled send time"
+        },
+        "timezone": {
+          "type": "string",
+          "default": "UTC",
+          "description": "Timezone for scheduled sends"
+        },
+        "recurring_pattern": {
+          "type": "string",
+          "enum": ["daily", "weekly", "monthly"],
+          "description": "For recurring campaigns"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End date for recurring campaigns"
+        }
+      },
+      "description": "Campaign scheduling configuration"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Notification title"
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Notification body text"
+        },
+        "image_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional image URL"
+        },
+        "action_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to open when notification is tapped"
+        },
+        "action_type": {
+          "type": "string",
+          "enum": ["open_app", "open_url", "deep_link"],
+          "default": "open_app"
+        },
+        "custom_data": {
+          "type": "object",
+          "description": "Custom data for app handling"
+        }
+      },
+      "required": ["title", "body"],
+      "description": "Notification content and actions"
+    },
+    "frequency_cap": {
+      "type": "object",
+      "properties": {
+        "max_per_user_per_day": {
+          "type": "integer",
+          "default": 3,
+          "description": "Maximum notifications per user per day"
+        },
+        "min_hours_between": {
+          "type": "integer",
+          "default": 4,
+          "description": "Minimum hours between notifications to same user"
+        }
+      },
+      "description": "Frequency capping rules"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "scheduled", "sending", "sent", "failed", "paused"],
+      "default": "draft",
+      "description": "Campaign status"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "sent_count": {
+          "type": "integer",
+          "default": 0
+        },
+        "delivered_count": {
+          "type": "integer",
+          "default": 0
+        },
+        "opened_count": {
+          "type": "integer",
+          "default": 0
+        },
+        "clicked_count": {
+          "type": "integer",
+          "default": 0
+        },
+        "failed_count": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "description": "Campaign performance metrics"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "ID of admin who created the campaign"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "ID of admin who approved the campaign"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the campaign was sent"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the campaign was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the campaign was last updated"
+    }
+  },
+  "additionalProperties": false
+}

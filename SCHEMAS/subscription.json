@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Subscription",
+  "type": "object",
+  "required": [
+    "id",
+    "user_id",
+    "provider",
+    "status",
+    "current_tier",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique subscription identifier"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user who owns this subscription"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["stripe", "apple", "google", "admin_comp"],
+      "description": "Payment provider"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "Provider's customer ID (e.g., Stripe customer ID)"
+    },
+    "subscription_id": {
+      "type": "string",
+      "description": "Provider's subscription ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "canceled", "past_due", "incomplete", "trialing", "paused"],
+      "description": "Current subscription status"
+    },
+    "price_id": {
+      "type": "string",
+      "description": "Provider's price ID"
+    },
+    "current_tier": {
+      "type": "string",
+      "enum": ["free", "plus", "pro", "premium"],
+      "description": "Current subscription tier"
+    },
+    "billing_cycle": {
+      "type": "string",
+      "enum": ["monthly", "annual", "lifetime"],
+      "description": "Billing cycle frequency"
+    },
+    "amount": {
+      "type": "integer",
+      "description": "Amount charged in cents"
+    },
+    "currency": {
+      "type": "string",
+      "default": "usd",
+      "description": "Currency code"
+    },
+    "trial_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial start date"
+    },
+    "trial_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial end date"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the subscription started"
+    },
+    "renews_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Next renewal date"
+    },
+    "ends_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the subscription ends (for canceled subscriptions)"
+    },
+    "cancel_at_period_end": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to cancel at the end of the current period"
+    },
+    "canceled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the subscription was canceled"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata from provider"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the subscription was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the subscription was last updated"
+    }
+  },
+  "additionalProperties": false
+}

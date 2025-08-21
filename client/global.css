@@ -1,0 +1,437 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100;8..144,200;8..144,300;8..144,400;8..144,500;8..144,600;8..144,700;8..144,800;8..144,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Design System Color Variables
+   * Based on the comprehensive Figma design system
+  */
+  :root {
+    /* Primary Colors */
+    --primary-50: #F5E7FF;
+    --primary-100: #EACFFF;
+    --primary-200: #E0B7FF;
+    --primary-300: #D59FFF;
+    --primary-400: #CB88FF;
+    --primary-500: #C070FF;
+    --primary-600: #B658FF;
+    --primary-700: #AB40FF;
+    --primary-800: #A128FF;
+    --primary-900: #9610FF;
+
+    /* Secondary Colors */
+    --secondary-50: #F0EFFA;
+    --secondary-100: #E1DEF5;
+    --secondary-200: #D2CEF0;
+    --secondary-300: #C3BDEB;
+    --secondary-400: #B5ADE6;
+    --secondary-500: #A69CE1;
+    --secondary-600: #978CDC;
+    --secondary-700: #887BD7;
+    --secondary-800: #796BD2;
+    --secondary-900: #6A5ACD;
+
+    /* Alert & Status Colors */
+    --alert-info: #9610FF;
+    --alert-success: #12D18E;
+    --alert-warning: #FACC15;
+    --alert-error: #F75555;
+    --alert-light-disabled: #D8D8D8;
+    --alert-dark-disabled: #23252B;
+    --alert-button-disabled: #780DCC;
+
+    /* Greyscale Colors */
+    --greyscale-50: #FAFAFA;
+    --greyscale-100: #F5F5F5;
+    --greyscale-200: #EEEEEE;
+    --greyscale-300: #E0E0E0;
+    --greyscale-400: #BDBDBD;
+    --greyscale-500: #9E9E9E;
+    --greyscale-600: #757575;
+    --greyscale-700: #616161;
+    --greyscale-800: #424242;
+    --greyscale-900: #212121;
+
+    /* Dark Colors */
+    --dark-1: #181A20;
+    --dark-2: #1E2025;
+    --dark-3: #1F222A;
+    --dark-4: #262A35;
+    --dark-5: #35383F;
+
+    /* Other Colors */
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+    --color-red: #F54336;
+    --color-pink: #EA1E61;
+    --color-purple: #9D28AC;
+    --color-deep-purple: #673AB3;
+    --color-indigo: #3F51B2;
+    --color-blue: #1A96F0;
+    --color-light-blue: #00A9F1;
+    --color-cyan: #00BCD3;
+    --color-teal: #009689;
+    --color-green: #4AAF57;
+    --color-light-green: #8BC255;
+    --color-lime: #CDDC4C;
+    --color-yellow: #FFEB4F;
+    --color-amber: #FFC02D;
+    --color-orange: #FF981F;
+    --color-deep-orange: #FF5726;
+    --color-brown: #7A5548;
+    --color-blue-grey: #607D8A;
+
+    /* Background Colors */
+    --bg-purple: #F7ECFF;
+    --bg-green: #E7FAF4;
+    --bg-blue: #EEF2FF;
+    --bg-red: #FFEFEE;
+    --bg-teal: #EDF7F6;
+    --bg-brown: #F8F3F1;
+    --bg-yellow: #FFFCEB;
+    --bg-orange: #FFF7EB;
+
+    /* Transparent Colors (8% opacity) */
+    --transparent-purple: rgba(150, 16, 255, 0.08);
+    --transparent-green: rgba(18, 209, 142, 0.08);
+    --transparent-blue: rgba(35, 93, 255, 0.08);
+    --transparent-red: rgba(254, 51, 35, 0.08);
+    --transparent-teal: rgba(26, 153, 142, 0.08);
+    --transparent-brown: rgba(164, 99, 77, 0.08);
+    --transparent-yellow: rgba(255, 211, 0, 0.08);
+    --transparent-orange: rgba(248, 147, 0, 0.08);
+
+    /* Gradient Colors */
+    --gradient-purple: linear-gradient(286deg, #9610FF 0%, #AB40FF 100%);
+    --gradient-green: linear-gradient(286deg, #12D18E 0%, #41DAA5 100%);
+    --gradient-blue: linear-gradient(286deg, #235DFF 0%, #4F7DFF 100%);
+    --gradient-red: linear-gradient(286deg, #FE3323 0%, #FE5C4F 100%);
+    --gradient-teal: #1A998E;
+    --gradient-brown: linear-gradient(286deg, #A4634D 0%, #AC7E6E 100%);
+    --gradient-yellow: linear-gradient(286deg, #FACC15 0%, #FFE580 100%);
+    --gradient-orange: linear-gradient(286deg, #F89300 0%, #FFBB58 100%);
+
+    /* Design System Semantic Colors */
+    --background: 0 0% 100%;
+    --foreground: 210 11% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 13%;
+    --primary: 268 100% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 244 44% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 9% 96%;
+    --muted-foreground: 220 2% 62%;
+    --accent: 220 9% 96%;
+    --accent-foreground: 210 11% 13%;
+    --destructive: 4 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 268 100% 53%;
+    --radius: 0.5rem;
+
+    /* Corner Radius */
+    --radius-0: 0;
+    --radius-16: 16px;
+    --radius-24: 24px;
+    --radius-32: 32px;
+
+    /* Faith theme variables (keeping existing) */
+    --faith-primary: #CB8120;
+    --faith-secondary: #B4793D;
+    --faith-accent: #4F80F7;
+    --faith-surface: #FFFEF6;
+    --faith-text: #2D2D2D;
+  }
+
+  .dark {
+    --background: 210 11% 13%;
+    --foreground: 0 0% 100%;
+    --card: 210 11% 13%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 11% 13%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 268 100% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 244 44% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 16% 17%;
+    --muted-foreground: 217 10% 65%;
+    --accent: 215 16% 17%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 16% 17%;
+    --input: 215 16% 17%;
+    --ring: 268 100% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+
+  /* Typography Scales */
+  .heading-1 {
+    @apply text-5xl font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .heading-2 {
+    @apply text-4xl font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .heading-3 {
+    @apply text-3xl font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .heading-4 {
+    @apply text-2xl font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .heading-5 {
+    @apply text-xl font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .heading-6 {
+    @apply text-lg font-bold leading-[160%];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .body-xlarge {
+    @apply text-lg leading-[160%] tracking-[0.2px];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .body-large {
+    @apply text-base leading-[160%] tracking-[0.2px];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .body-medium {
+    @apply text-sm leading-[160%] tracking-[0.2px];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .body-small {
+    @apply text-xs leading-[160%] tracking-[0.2px];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  .body-xsmall {
+    @apply text-[10px] leading-[160%] tracking-[0.2px];
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  /* Playfair Display Typography */
+  .heading-1-playfair {
+    @apply text-5xl font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-2-playfair {
+    @apply text-4xl font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-3-playfair {
+    @apply text-3xl font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-4-playfair {
+    @apply text-2xl font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-5-playfair {
+    @apply text-xl font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  .heading-6-playfair {
+    @apply text-lg font-bold leading-[160%];
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Roboto Flex Typography */
+  .heading-1-roboto {
+    @apply text-5xl font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .heading-2-roboto {
+    @apply text-4xl font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .heading-3-roboto {
+    @apply text-3xl font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .heading-4-roboto {
+    @apply text-2xl font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .heading-5-roboto {
+    @apply text-xl font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .heading-6-roboto {
+    @apply text-lg font-bold leading-[160%];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  /* Roboto Flex Body Text */
+  .body-xlarge-roboto {
+    @apply text-lg leading-[160%] tracking-[0.2px];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .body-large-roboto {
+    @apply text-base leading-[160%] tracking-[0.2px];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .body-medium-roboto {
+    @apply text-sm leading-[160%] tracking-[0.2px];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .body-small-roboto {
+    @apply text-xs leading-[160%] tracking-[0.2px];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  .body-xsmall-roboto {
+    @apply text-[10px] leading-[160%] tracking-[0.2px];
+    font-family: 'Roboto Flex', sans-serif;
+  }
+
+  /* Faith mode styling */
+  .theme-faith {
+    --primary: var(--faith-primary);
+    --primary-foreground: 255 255 255;
+    --secondary: var(--faith-secondary);
+    --background: var(--faith-surface);
+    --foreground: var(--faith-text);
+  }
+
+  /* Faith animations */
+  @keyframes divine-pulse {
+    0%, 100% {
+      opacity: 0.05;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.15;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes gentle-float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(2deg);
+    }
+  }
+
+  /* Faith symbols styling */
+  .faith-symbol-1 {
+    animation: divine-pulse 4s ease-in-out infinite;
+  }
+
+  .faith-symbol-2 {
+    animation: gentle-float 6s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .faith-symbol-3 {
+    animation: divine-pulse 5s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  .faith-symbol-4 {
+    animation: gentle-float 7s ease-in-out infinite;
+    animation-delay: 3s;
+  }
+
+  .faith-symbol-5 {
+    animation: divine-pulse 4.5s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .faith-symbol-1,
+    .faith-symbol-2,
+    .faith-symbol-3,
+    .faith-symbol-4,
+    .faith-symbol-5 {
+      animation: none;
+    }
+  }
+}
+
+@layer components {
+  /* Design System Components */
+  .btn-primary {
+    @apply bg-[var(--primary-900)] text-white font-semibold py-3 px-6 rounded-[var(--radius-24)] hover:bg-[var(--primary-800)] transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-[var(--secondary-900)] text-white font-semibold py-3 px-6 rounded-[var(--radius-24)] hover:bg-[var(--secondary-800)] transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-[var(--primary-900)] text-[var(--primary-900)] font-semibold py-3 px-6 rounded-[var(--radius-24)] hover:bg-[var(--primary-900)] hover:text-white transition-all duration-200;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-[var(--radius-24)] shadow-[0_4px_60px_0_rgba(4,6,15,0.08)];
+  }
+
+  .surface-greyscale {
+    @apply bg-[var(--greyscale-50)];
+  }
+
+  /* Status indicators */
+  .status-success {
+    @apply bg-[var(--alert-success)] text-white;
+  }
+
+  .status-error {
+    @apply bg-[var(--alert-error)] text-white;
+  }
+
+  .status-warning {
+    @apply bg-[var(--alert-warning)] text-white;
+  }
+
+  .status-info {
+    @apply bg-[var(--alert-info)] text-white;
+  }
+}

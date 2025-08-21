@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "type": "object",
+  "required": [
+    "id",
+    "email",
+    "role",
+    "subscription_tier",
+    "is_banned",
+    "verification_status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique user identifier"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "User's full name"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 18,
+      "maximum": 100,
+      "description": "User's age"
+    },
+    "location": {
+      "type": "string",
+      "description": "User's location"
+    },
+    "bio": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "User's biography"
+    },
+    "denomination": {
+      "type": "string",
+      "description": "Religious denomination"
+    },
+    "church_attendance": {
+      "type": "string",
+      "enum": ["weekly", "monthly", "occasionally", "rarely"],
+      "description": "Church attendance frequency"
+    },
+    "love_language": {
+      "type": "string",
+      "enum": ["words_of_affirmation", "acts_of_service", "receiving_gifts", "quality_time", "physical_touch"],
+      "description": "Primary love language"
+    },
+    "personality_type": {
+      "type": "string",
+      "description": "MBTI or similar personality type"
+    },
+    "looking_for": {
+      "type": "string",
+      "enum": ["dating", "marriage", "friendship", "community"],
+      "description": "What the user is looking for"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's interests"
+    },
+    "availability": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's availability"
+    },
+    "preferred_age_min": {
+      "type": "integer",
+      "minimum": 18,
+      "description": "Minimum preferred age for matches"
+    },
+    "preferred_age_max": {
+      "type": "integer",
+      "maximum": 100,
+      "description": "Maximum preferred age for matches"
+    },
+    "max_distance": {
+      "type": "integer",
+      "description": "Maximum distance for matches in miles"
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether onboarding is complete"
+    },
+    "profile_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether profile is visible to others"
+    },
+    "show_location": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to show location to others"
+    },
+    "face_photo_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to user's face photo"
+    },
+    "id_type": {
+      "type": "string",
+      "enum": ["drivers_license", "passport", "state_id"],
+      "description": "Type of ID document provided"
+    },
+    "id_photo_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to user's ID photo"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["user", "support", "editor", "admin"],
+      "default": "user",
+      "description": "User's role in the system"
+    },
+    "is_banned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user is banned"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending",
+      "description": "User's verification status"
+    },
+    "invited_by_invite_code": {
+      "type": ["string", "null"],
+      "description": "The invite code used during signup (if applicable)"
+    },
+    "signup_method": {
+      "type": "string",
+      "enum": ["oauth", "email_code"],
+      "default": "oauth",
+      "description": "How the user signed up"
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": ["free", "plus", "pro", "premium"],
+      "default": "free",
+      "description": "User's subscription tier"
+    },
+    "entitlements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's entitlements based on subscription and admin comps"
+    },
+    "badges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's earned badges"
+    },
+    "blocked_users": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of blocked user IDs"
+    },
+    "streak_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Current streak count for gamification"
+    },
+    "total_points": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total points earned"
+    },
+    "level": {
+      "type": "integer",
+      "default": 1,
+      "description": "User's current level"
+    },
+    "last_active_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time user was active"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user was last updated"
+    }
+  },
+  "additionalProperties": false
+}

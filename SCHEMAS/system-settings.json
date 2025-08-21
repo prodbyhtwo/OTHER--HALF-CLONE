@@ -1,0 +1,49 @@
+{
+  "title": "SystemSettings",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "const": "SystemSettings",
+      "description": "Singleton document identifier"
+    },
+    "invite_only_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Global toggle for invite-only registration mode"
+    },
+    "invite_requirements": {
+      "type": "object",
+      "properties": {
+        "email_domain_whitelist": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          },
+          "default": [],
+          "description": "List of allowed email domains (e.g., ['church.org', 'ministry.com'])"
+        },
+        "must_supply_invite_key": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether users must provide an invite key (false allows domain whitelist only)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Configuration for invite requirements"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the settings were first created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the settings were last modified"
+    }
+  },
+  "required": ["id", "invite_only_mode", "invite_requirements"],
+  "additionalProperties": false
+}

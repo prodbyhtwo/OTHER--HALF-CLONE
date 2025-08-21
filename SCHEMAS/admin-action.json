@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AdminAction",
+  "type": "object",
+  "required": [
+    "id",
+    "admin_id",
+    "action_type",
+    "correlation_id",
+    "timestamp",
+    "ip_address"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique action identifier"
+    },
+    "admin_id": {
+      "type": "string",
+      "description": "ID of the admin who performed the action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "user_ban",
+        "user_unban",
+        "user_approve",
+        "user_reject",
+        "user_promote",
+        "user_demote",
+        "subscription_change",
+        "subscription_comp",
+        "content_create",
+        "content_update",
+        "content_delete",
+        "notification_send",
+        "bulk_approve_all",
+        "bulk_approve_verified",
+        "church_create",
+        "church_update",
+        "church_delete",
+        "learning_content_create",
+        "learning_content_update",
+        "learning_content_delete",
+        "system_setting_change"
+      ],
+      "description": "Type of action performed"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the target entity (user, content, etc.)"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": ["user", "subscription", "church", "learning_content", "notification", "system"],
+      "description": "Type of target entity"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "type": "object",
+          "description": "State before the action"
+        },
+        "after": {
+          "type": "object",
+          "description": "State after the action"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the action"
+        },
+        "bulk_count": {
+          "type": "integer",
+          "description": "Number of items affected in bulk actions"
+        },
+        "filters_applied": {
+          "type": "object",
+          "description": "Filters that were applied during bulk actions"
+        }
+      },
+      "description": "Additional action metadata"
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "Correlation ID for tracing related actions"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Admin's session ID"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the action was performed"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "IP address of the admin"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "User agent of the admin's browser"
+    },
+    "success": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the action was successful"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if action failed"
+    }
+  },
+  "additionalProperties": false
+}
