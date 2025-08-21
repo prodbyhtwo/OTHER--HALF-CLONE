@@ -25,9 +25,27 @@ export function createServer() {
 
   const app = express();
 
-  // Middleware
-  app.use(cors());
-  app.use(express.json({ limit: "1mb" })); // Limit JSON payload size
+  // Security middleware (must be first)
+  configureSecurityMiddleware(app);
+
+  // CORS middleware
+  app.use(cors({
+    origin: env.NODE_ENV === "production"
+      ? [env.FRONTEND_URL] // Restrict to your domain in production
+      : true, // Allow all origins in development
+    credentials: true,
+  }));
+
+  // Body parsing middleware with security limits
+  app.use(express.json({
+    limit: "1mb",
+    verify: (req: any, res, buf) => {
+      // Store raw body for webhook verification
+      if (req.path.includes('/webhook')) {
+        req.rawBody = buf;
+      }
+    }
+  }));
   app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
   // Example API routes
